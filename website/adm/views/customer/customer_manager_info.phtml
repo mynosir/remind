@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?php
+    $this->load->view('/public/linker',array(
+        'css'=>array(),
+        'js' =>array(),
+    ));
+    $ctrl_url = base_url('customer/customer_manager');
+?>
+<style>
+    .required {
+        color: red;
+    }
+    .fullwidth {
+        width: 100%;
+    }
+    .dn {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<div id="p-edit" class="easyui-panel" title="" fit="true" border="false">
+    <div class="easyui-layout" fit="true">
+        <div data-options="region:'north'" style="height:28px;overflow:hidden;background-color:#dddddd;" border="false">
+            <button class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="javascript:window.parent.change_panel('dg');">返回</button>
+        </div>
+        <div data-options="region:'center'" style="overflow:hidden;" border="false">
+            <div id="p-edit-login" class="easyui-panel" fit="true" border="false" style="overflow:auto;">
+                <form id="fm-edit" method="post" style="width:90%; margin:10px;">
+                    <input type="hidden" name="actionxm" value="<?php echo $actionxm; ?>" />
+                    <input type="hidden" name="id" value="<?php echo get_value($info, 'id', '0'); ?>">
+                    <table class="fm-table" cellpadding="8px">
+                        <colgroup>
+                            <col width="240px"  />
+                            <col width="470px" />
+                            <col width="*" />
+                        </colgroup>
+                        <tr>
+                            <td class="label">
+                                <span class="required">*</span>
+                                申请人：
+                            </td>
+                            <td>
+                                <input class="easyui-textbox" name="user_name" value="<?php echo get_value($info, 'user_name', ''); ?>" style="width:100%" />
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                <span class="required"></span>
+                                申请人类型:
+                            </td>
+                            <td>
+                                <select id="type" name="type" style="width:auto;">
+                                    <option value="0" <?php $type=get_value($info, 'type', ''); if($type==0) echo 'selected="selected"'; ?>>公司</option>
+                                    <option value="1" <?php $type=get_value($info, 'type', ''); if($type==1) echo 'selected="selected"'; ?>>个人</option>
+                                </select>
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                <span class="required">*</span>
+                                <span id="require_part_name">身份证：</span>
+                            </td>
+                            <td>
+                                <input class="easyui-textbox" name="id_code" value="<?php echo get_value($info, 'id_code', ''); ?>" style="width:100%" />
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                <span class="required"></span>
+                                地址：
+                            </td>
+                            <td>
+                                <input class="easyui-textbox" name="address" data-options="multiline:true" value="<?php echo get_value($info, 'address', ''); ?>" style="width:100%;height:150px">
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                <span class="required"></span>
+                                邮编：
+                            </td>
+                            <td>
+                                <input class="easyui-textbox" name="zip_code" value="<?php echo get_value($info, 'zip_code', ''); ?>" style="width:100%" />
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                联系人：
+                            </td>
+                            <td>
+                                <input class="easyui-textbox" id="linkman" name="linkman" value="<?php echo get_value($info, 'linkman', ''); ?>" style="width:100%" />
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                固话：
+                            </td>
+                            <td>
+                                <input class="easyui-textbox" name="fixed_tel" value="<?php echo get_value($info, 'fixed_tel', ''); ?>" style="width:100%" />
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                <span class="required">*</span>
+                                手机号：
+                            </td>
+                            <td>
+                                <input class="easyui-textbox" name="mobile_tel" value="<?php echo get_value($info, 'mobile_tel', ''); ?>" style="width:100%" />
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;" colspan="2">
+                                <button type="button" class="easyui-linkbutton" style="width:90px" onclick="do_save()">保存</button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" class="easyui-linkbutton" style="width:90px" onclick="do_reset()">重置</button>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    (function(){
+        if ($('#type')[0].value=="1") {
+            $('#require_part_name').text('身份证');
+            $('#linkman').closest('tr').addClass('dn');
+        } else {
+            $('#require_part_name').text('机构编码');
+            $('#linkman').closest('tr').removeClass('dn');
+            // $('#linkman').textbox();
+            $.parser.parse($('#linkman').html());
+        }
+        $('#type').on('change', function(){
+            if ($('#type')[0].value=="1") {
+                $('#require_part_name').text('身份证');
+                $('#linkman')[0].value = '';
+                $('#linkman').closest('tr').addClass('dn');
+            } else {
+                $('#require_part_name').text('机构编码');
+                $('#linkman').closest('tr').removeClass('dn');
+                // $('#linkman').textbox();
+                $.parser.parse($('#linkman').html());
+            }
+        })
+    })();
+    // 保存登录tips信息
+    function do_save() {
+        $('#fm-edit').form('submit', {
+            url: '<?php echo $ctrl_url; ?>/post',
+            onSubmit: function() {
+                if($('#fm-edit input[name="user_name"]').val()=='') {
+                    $.messager.alert('操作提示', '请输入申请人');
+                    return false;
+                }
+
+                return true;
+            },
+            success: function(result) {
+                var result = $.parseJSON(result);
+                var actionxm = $('#fm-edit input[name="actionxm"]').val();
+                if(result.success==false) {
+                    $.messager.alert('操作提示', result.data, 'warning');
+                } else {
+                    cur_tips_id = result.data.tips_id;
+                    $('#fm-edit input[name="actionxm"]').val('update');
+                    $('#fm-edit input[name="tips_id"]').val(cur_tips_id);
+                    $.messager.alert('操作提示', '保存成功', 'info', function() {
+                        window.parent.dg_reload();
+                        window.parent.change_panel('dg');
+                    });
+                }
+            }
+        })
+    }
+
+</script>
+
+</body>
+</html>
