@@ -52,4 +52,8 @@ create table if not exists `corder` (
 ) engine = myisam character set utf8 collate utf8_general_ci comment = '客户订单表';
 
 
-
+-- linzequan 20160814
+-- 修改客户信息表、节点配置表、订单表的id为自增
+alter table `customer` modify column `id` int(11) not null auto_increment comment '自增ID';
+alter table `point_tbl` modify column `id` int(11) not null auto_increment comment '自增ID';
+alter table `corder` modify column `id` int(11) not null auto_increment comment '自增ID';
