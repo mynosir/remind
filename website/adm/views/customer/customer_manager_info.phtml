@@ -43,7 +43,7 @@
                                 申请人：
                             </td>
                             <td>
-                                <input class="easyui-textbox" name="user_name" value="<?php echo get_value($info, 'user_name', ''); ?>" style="width:100%" />
+                                <input class="easyui-textbox" name="user_name" value="<?php echo get_value($info, 'user_name', ''); ?>" style="width:100%" data-options="required:true" />
                             </td>
                             <td>
                                 <span style="color:red;"></span>
@@ -70,7 +70,7 @@
                                 <span id="require_part_name">身份证：</span>
                             </td>
                             <td>
-                                <input class="easyui-textbox" name="id_code" value="<?php echo get_value($info, 'id_code', ''); ?>" style="width:100%" />
+                                <input class="easyui-textbox" name="id_code" value="<?php echo get_value($info, 'id_code', ''); ?>" style="width:100%" data-options="required:true"/>
                             </td>
                             <td>
                                 <span style="color:red;"></span>
@@ -82,7 +82,7 @@
                                 地址：
                             </td>
                             <td>
-                                <input class="easyui-textbox" name="address" data-options="multiline:true" value="<?php echo get_value($info, 'address', ''); ?>" style="width:100%;height:150px">
+                                <input class="easyui-textbox" name="address" value="<?php echo get_value($info, 'address', ''); ?>" style="width:100%;">
                             </td>
                             <td>
                                 <span style="color:red;"></span>
@@ -128,7 +128,7 @@
                                 手机号：
                             </td>
                             <td>
-                                <input class="easyui-textbox" name="mobile_tel" value="<?php echo get_value($info, 'mobile_tel', ''); ?>" style="width:100%" />
+                                <input class="easyui-textbox" name="mobile_tel" value="<?php echo get_value($info, 'mobile_tel', ''); ?>" style="width:100%" data-options="required:true"/>
                             </td>
                             <td>
                                 <span style="color:red;"></span>
@@ -157,7 +157,6 @@
         } else {
             $('#require_part_name').text('机构编码');
             $('#linkman').closest('tr').removeClass('dn');
-            // $('#linkman').textbox();
             $.parser.parse($('#linkman').html());
         }
         $('#type').on('change', function(){
@@ -168,23 +167,15 @@
             } else {
                 $('#require_part_name').text('机构编码');
                 $('#linkman').closest('tr').removeClass('dn');
-                // $('#linkman').textbox();
                 $.parser.parse($('#linkman').html());
             }
         })
     })();
+
     // 保存登录tips信息
     function do_save() {
         $('#fm-edit').form('submit', {
             url: '<?php echo $ctrl_url; ?>/post',
-            onSubmit: function() {
-                if($('#fm-edit input[name="user_name"]').val()=='') {
-                    $.messager.alert('操作提示', '请输入申请人');
-                    return false;
-                }
-
-                return true;
-            },
             success: function(result) {
                 var result = $.parseJSON(result);
                 var actionxm = $('#fm-edit input[name="actionxm"]').val();

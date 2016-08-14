@@ -2,18 +2,25 @@
 /**
  * 客户信息管理模型
  *
- *
  */
 class customer_manager_model extends MY_Model {
 
     private $table = 'customer';
     private $fields = 'id, user_name, type, id_code, address, zip_code, linkman, fixed_tel, mobile_tel, create_time, update_time';
 
+
     public function __construct() {
         parent::__construct();
     }
 
 
+    /**
+     * 搜索客户信息列表
+     * @param  [type] $params [description]
+     * @param  [type] $order  [description]
+     * @param  [type] $page   [description]
+     * @return [type]         [description]
+     */
     public function search($params, $order, $page) {
 
         $start_time = get_value($params, 'start_time');               // 创建开始时间
@@ -103,7 +110,7 @@ class customer_manager_model extends MY_Model {
             'create_time'            => time(),
             'update_time'            => time()
         );
-        $where = array('id'=>$id);
+        $where = array('id'=> $id);
         $this->db->update($this->table, $data, $where);
         return $this->create_result(true, 0, $where);
     }

@@ -2,7 +2,6 @@
 /**
  * customers' infomation manager controller
  *
- *
  */
 class customer_manager extends MY_Controller {
 
@@ -15,6 +14,7 @@ class customer_manager extends MY_Controller {
     public function index() {
         $this->load->view('customer/customer_manager');
     }
+
 
     public function info($id=0) {
         $data = array(
@@ -31,6 +31,7 @@ class customer_manager extends MY_Controller {
         $this->load->view('customer/customer_manager_info', $data);
     }
 
+
     public function get() {
         $actionxm = $this->get_request('actionxm');
         $result = array();
@@ -41,11 +42,6 @@ class customer_manager extends MY_Controller {
                 $page = get_datagrid_page();
                 $result = $this->def_model->search($params, $order, $page);
                 echo json_encode($result);
-                break;
-            case 'details':
-                $id = $this->get_request('id');
-                $result = $this->def_model->get_detail($id);
-                echo $result;
                 break;
         }
     }
