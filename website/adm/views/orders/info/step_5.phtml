@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?php
+    $this->load->view('/public/linker',array(
+        'css'=>array(),
+        'js' =>array(),
+    ));
+    $ctrl_url = base_url('orders/order_undone_manager');
+?>
+<style>
+    .required {
+        color: red;
+    }
+    .fullwidth {
+        width: 100%;
+    }
+    .dn {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<div id="p-edit" class="easyui-panel" title="" fit="true" border="false">
+    <div class="easyui-layout" fit="true">
+        <div data-options="region:'north'" style="height:28px;overflow:hidden;background-color:#dddddd;" border="false">
+            <button class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="javascript:window.parent.change_panel('dg');">返回</button>
+        </div>
+        <div data-options="region:'center'" style="overflow:hidden;" border="false">
+            <div id="p-edit-login" class="easyui-panel" fit="true" border="false" style="overflow:auto;">
+                <form id="fm-edit" method="post" style="width:90%; margin:10px;">
+                    <input type="hidden" name="actionxm" value="<?php echo $actionxm; ?>" />
+                    <input type="hidden" name="id" value="<?php echo get_value($info, 'id', '0'); ?>">
+                    <table class="fm-table" cellpadding="8px">
+                        <colgroup>
+                            <col width="240px"  />
+                            <col width="470px" />
+                            <col width="*" />
+                        </colgroup>
+                        <tr>
+                            <td class="label">
+                                <span class="required">*</span>
+                                登记发文日：
+                            </td>
+                            <td>
+                                <input class="easyui-datebox" style="width:150px;" name="start_time" id="start_time" data-options="required:true">
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                <span class="required">*</span>
+                                下一步处理节点:
+                            </td>
+                            <td>
+                                <select id="nextid" name="nextid" style="width:auto;">
+                                    <!-- <option value="0" >订单管理（市场部）</option> -->
+                                    <option value="1" selected="selected">任务处理（专利编制人）</option>
+                                    <option value="2" >流程部（产权局沟通）</option>
+                                    <option value="4" >财务缴费</option>
+                                    <!-- <option value="5" >流程部（登记发文日）</option> -->
+                                    <option value="6" >财务（确认完成交款）</option>
+                                </select>
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                <span class="required">*</span>
+                                处理期限：
+                            </td>
+                            <td>
+                                <input class="easyui-datebox" style="width:150px;" name="start_time" id="start_time" data-options="required:true">
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                <span class="required">*</span>
+                                下一步责任人：
+                            </td>
+                            <td>
+                                <select id="branch_id" class="easyui-combobox" style="width:200px;" name="branch_id" data-options="valueField:'id',textField:'name'" panelHeight="auto" >
+                                </select>
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;" colspan="2">
+                                <button type="button" class="easyui-linkbutton" style="width:90px" onclick="do_save()">保存</button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" class="easyui-linkbutton" style="width:90px" onclick="do_return()">回退</button>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </table>
+                </form>
+                <hr>
+                <p>当前节点：流程部（登记发文日）</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    (function(){
+
+    })();
+
+    // 保存登录tips信息
+    function do_save() {
+        $('#fm-edit').form('submit', {
+            url: '<?php echo $ctrl_url; ?>/post',
+            success: function(result) {
+                var result = $.parseJSON(result);
+                var actionxm = $('#fm-edit input[name="actionxm"]').val();
+                if(result.success==false) {
+                    $.messager.alert('操作提示', result.data, 'warning');
+                } else {
+                    cur_tips_id = result.data.tips_id;
+                    $('#fm-edit input[name="actionxm"]').val('update');
+                    $('#fm-edit input[name="tips_id"]').val(cur_tips_id);
+                    $.messager.alert('操作提示', '保存成功', 'info', function() {
+                        window.parent.dg_reload();
+                        window.parent.change_panel('dg');
+                    });
+                }
+            }
+        })
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,10 +1,10 @@
 <?php
 /**
- * done orders manager controller
+ * undone orders manager controller
  *
  *
  */
-class order_manager extends MY_Controller {
+class order_undone_manager extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
@@ -13,22 +13,29 @@ class order_manager extends MY_Controller {
 
 
     public function index() {
-        $this->load->view('orders/order_manager');
+        $this->load->view('orders/order_undone_manager');
     }
 
-    public function details($id=0) {
+    public function info($id=0) {
         $data = array(
-            'actionxm' => 'details',
+            'actionxm' => 'insert',
             'info' => array()
         );
         if(intval($id)>0) {
             $info = $this->def_model->get_info($id);
             if(count($info)>0) {
-                $data['actionxm'] = 'details';
+                $data['actionxm'] = 'update';
                 $data['info'] = $info;
             }
+        }else{
+            $this->load->view('orders/info/step_0', $data);
         }
-        $this->load->view('orders/order_detail_info', $data);
+    }
+
+
+    // 打开详情页面
+    public function details() {
+
     }
 
     public function get() {
@@ -48,6 +55,24 @@ class order_manager extends MY_Controller {
                 echo $result;
                 break;
         }
+    }
+
+
+    public function post() {
+        $actionxm = $this->get_request('actionxm');
+        $result = array();
+        switch($actionxm) {
+            case 'insert':
+                $info = $this->get_request();
+                $result = $this->def_model->insert($info);
+                break;
+            case 'update':
+                $id = $this->input->post('id');
+                $info = $this->get_request();
+                $result = $this->def_model->update($id, $info);
+                break;
+        }
+        $this->output_result($result);
     }
 
 }

@@ -4,10 +4,10 @@
  *
  *
  */
-class customer_manager_model extends MY_Model {
+class order_manager_model extends MY_Model {
 
     private $table = 'corder';
-    private $fields = 'id, applyid, name, customer, type, islater, billinfo, receiptinfo, handelpoint, step, handeltime, nexthandeler, remark, zipname, registerdate, applyno, ispaid, isslowdown, isbillout, registrationdate';
+    private $fields = 'id, applyid, name, customer, type, islater, billinfo, receiptinfo, handelpoint, step, handeltime, nexthandeler, nextid, remark, zipname, registerdate, applyno, ispaid, isslowdown, isbillout, registrationdate, isend, createtime, createuser';
 
     public function __construct() {
         parent::__construct();
@@ -24,10 +24,10 @@ class customer_manager_model extends MY_Model {
 
         $where = array();
         if($start_time!='') {
-            $where[] = array('update_time', strtotime($start_time), '>=');
+            $where[] = array('createtime', strtotime($start_time), '>=');
         }
         if($end_time!='') {
-            $where[] = array('update_time', strtotime($end_time), '<=');
+            $where[] = array('createtime', strtotime($end_time), '<=');
         }
         if($name!='') {
             $where[] = array('name', $name, 'like');
@@ -40,7 +40,7 @@ class customer_manager_model extends MY_Model {
         }
 
         if(count($order)==0) {
-            $order[] = ' update_time desc';
+            $order[] = ' createtime desc';
         }
         $datas = $this->db->get_page($this->table, $this->fields, $where, $order, $page);
 
@@ -48,14 +48,14 @@ class customer_manager_model extends MY_Model {
         return $datas;
     }
 
-
-    public function get_info($id) {
-        if($id<0) {
+    // 订单详情查询，根据applyid查询组合
+    public function get_info($applyid) {
+        if($applyid<0) {
             return array();
         }
         $result = array();
 
-        $query = $this->db->select($this->fields)->where('id', $id)->get($this->table);
+        $query = $this->db->select($this->fields)->where('applyid', $applyid)->get($this->table);
         $result = $query->row_array();
 
         return $result;
@@ -63,32 +63,57 @@ class customer_manager_model extends MY_Model {
 
 
     public function insert($info) {
-        if($info['type']=='1') {
-            $info['linkman'] = '';
+        if ($info['nextid']!='6') {
+            $info['isend'] = 0;
         }
+        if ($info['nextid']!='3') {
+            $info['registerdate'] = 0;
+        }
+        if ($info['nextid']==1 && $info['step']==1) {
+            $info['applyid'] = $this->generateOrderNum();
+            if ($info['type']!=1) {
+                $info['islater'] = 0;
+            }
+        }
+
         $data = array(
-            //TODO: 节点是否分开
+            'applyid' => get_value($info, 'applyid'),
+            'name' => get_value($info, 'name'),
+            'customer' => get_value($info, 'customer'),
+            'type' => get_value($info, 'type'),
+            'islater' => get_value($info, 'islater'),
+            'billinfo' => get_value($info, 'billinfo'),
+            'receiptinfo' => get_value($info, 'receiptinfo'),
+            'handelpoint' => get_value($info, 'handelpoint'),
+            'step' => get_value($info, 'step'),
+            'handeltime' => strtotime(get_value($info, 'handeltime')),
+            'nexthandeler' => get_value($info, 'nexthandeler'),
+            'nextid' => get_value($info, 'nextid'),
+            'remark' => get_value($info, 'remark'),
+            'zipname' => get_value($info, 'zipname'),
+            'registerdate' => get_value($info, 'registerdate', 0),
+            'applyno' => get_value($info, 'applyno'),
+            'ispaid' => get_value($info, 'ispaid', 0),
+            'isslowdown' => get_value($info, 'isslowdown', 0),
+            'isbillout' => get_value($info, 'isbillout', 0),
+            'registrationdate' => get_value($info, 'registrationdate', 0),
+            'isend' => get_value($info, 'isend', 0),
+            'createuser' => $this->session->userdata('user_name'),
+            'createtime' => time()
         );
+
         $this->db->insert($this->table, $data);
+        // die($this->db->last_query());
         return $this->create_result(true, 0, array('id'=>$this->db->insert_id()));
     }
 
 
-    public function update($id, $info) {
-        if($info['type']=='1') {
-            $info['linkman'] = '';
-        }
-        $data = array(
-
-        );
-        $where = array('id'=>$id);
-        $this->db->update($this->table, $data, $where);
-        return $this->create_result(true, 0, $where);
+    /**
+     * 生成唯一订单号
+     */
+    private function generateOrderNum() {
+        $username = $this->session->userdata('user_name');
+        return md5($username . time());
     }
 
-
-    public function delete($id) {
-        $this->db->delete($this->table, array('id'=>$id));
-        return $this->create_result(true, 0, array('id'=>$id));
-    }
 }

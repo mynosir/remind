@@ -57,3 +57,20 @@ create table if not exists `corder` (
 alter table `customer` modify column `id` int(11) not null auto_increment comment '自增ID';
 alter table `point_tbl` modify column `id` int(11) not null auto_increment comment '自增ID';
 alter table `corder` modify column `id` int(11) not null auto_increment comment '自增ID';
+
+
+-- jinmengjie 20160818
+-- 修改corder表中字段必填限制
+alter table `corder` modify column `applyid` varchar(32) default '' comment '申请id,username+时间戳';
+alter table `corder` modify column `name` varchar(32) default '' comment '申请名称';
+alter table `corder` modify column `customer` varchar(32) default '' comment '申请人';
+alter table `corder` modify column `handeltime` varchar(32) default '' comment '处理期限';
+alter table `corder` modify column `nexthandeler` varchar(32) default '' comment '下一步处理人id';
+
+-- jinmengjie 20160818
+-- corder表新增字段createuser、createtime、nextid、isend
+ALTER TABLE `corder` ADD `nextid` tinyint(2) default 0 COMMENT '下一步处理节点id' AFTER `nexthandeler`;
+ALTER TABLE `corder` ADD `createuser` VARCHAR(32) NULL COMMENT '创建者' AFTER `registrationdate`;
+ALTER TABLE `corder` ADD `createtime` int(11) COMMENT '创建时间' AFTER `registrationdate`;
+ALTER TABLE `corder` ADD `isend` tinyint(2) default 0 COMMENT '是否处理完成' AFTER `registrationdate`;
+

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?php
+    $this->load->view('/public/linker',array(
+        'css'=>array(),
+        'js' =>array(),
+    ));
+    $ctrl_url = base_url('orders/order_undone_manager');
+?>
+<style>
+    .required {
+        color: red;
+    }
+    .fullwidth {
+        width: 100%;
+    }
+    .dn {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<div id="p-edit" class="easyui-panel" title="" fit="true" border="false">
+    <div class="easyui-layout" fit="true">
+        <div data-options="region:'north'" style="height:28px;overflow:hidden;background-color:#dddddd;" border="false">
+            <button class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="javascript:window.parent.change_panel('dg');">返回</button>
+        </div>
+        <div data-options="region:'center'" style="overflow:hidden;" border="false">
+            <div id="p-edit-login" class="easyui-panel" fit="true" border="false" style="overflow:auto;">
+                <div class="easyui-panel" style="padding:15px 5px;">
+                    <span>订单已完成</span>.<span class="split-line">|</span>
+                    订单处理流程明细：
+                </div>
+                <table id="pg" style="width:100%"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    (function(){
+        $('#pg').propertygrid({
+            url: 'get_data.php',
+            showGroup: true,
+            scrollbarSize: 0
+        });
+        var row = {
+            name:'AddName',
+            value:'',
+            group:'Marketing Settings'
+        };
+        $('#pg').propertygrid('appendRow',row);
+    })();
+
+</script>
+
+</body>
+</html>
