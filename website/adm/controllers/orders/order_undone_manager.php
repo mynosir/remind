@@ -9,11 +9,15 @@ class order_undone_manager extends MY_Controller {
     public function __construct() {
         parent::__construct();
         $this->load->model('order_manager_model', 'def_model');
+        $this->load->model('customer_manager_model', 'customer_model');
     }
 
 
     public function index() {
         $this->load->view('orders/order_undone_manager');
+        // var_dump($this->session);exit();
+        // $customers = $this->customer_model->getList();
+        // var_dump($customers); exit();
     }
 
     public function info($id=0) {
@@ -22,11 +26,8 @@ class order_undone_manager extends MY_Controller {
             'info' => array()
         );
         if(intval($id)>0) {
-            $info = $this->def_model->get_info($id);
-            if(count($info)>0) {
-                $data['actionxm'] = 'update';
-                $data['info'] = $info;
-            }
+            $data['actionxm'] = 'update';
+            //TODO:
         }else{
             $this->load->view('orders/info/step_0', $data);
         }
@@ -34,8 +35,24 @@ class order_undone_manager extends MY_Controller {
 
 
     // 打开详情页面
-    public function details() {
+    public function details($applyid=0) {
+        $data = array(
+            'actionxm' => 'insert',
+            'info' => array()
+        );
+        if($applyid != 0) {
+            $info = $this->def_model->get_info($applyid);
+            $data['info'] = $info;
+            $this->load->view('orders/info/info', $data);
+        }else{
+            $this->load->view('orders/info/step_0', $data);
+        }
+    }
 
+    // 查询customer表
+    public function customers() {
+        $customers = $this->customer_model->getList();
+        echo json_encode($customers);
     }
 
     public function get() {

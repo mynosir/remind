@@ -52,7 +52,7 @@
         <div id="toolbar" style="padding:2px 3px;">
             <form id="fm-search" method="post" novalidate>
                 <div style="margin:3px 0;">
-                    <a class="easyui-linkbutton" iconCls="icon-add"    plain="true" onclick="open_insert()" title="insert">添加</a>
+                    <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="open_insert()" title="insert">添加</a>
                     <span class="split-line">|</span>
                     创建时间：
                     <input class="easyui-datebox" style="width:150px;" name="start_time" id="start_time">
@@ -62,7 +62,8 @@
                     申请名称：
                     <input id="user_name" class="easyui-textbox" style="width:100px" name="user_name">
                     申请人：
-                    <input id="id_code" class="easyui-textbox" style="width:100px" name="id_code">
+                    <select id="id_code" class="easyui-combobox" style="width:200px;" name="id_code" data-options="valueField:'id',textField:'showname'" panelHeight="auto" >
+                    </select>
                     客户类型：
                     <select id="type" class="textbox-text" name="type" style="width:80px;">
                         <option value="-1" selected="selected">不限</option>
@@ -96,15 +97,15 @@
                     {
                         field:'applyid',
                         title:'订单号',
-                        width:'50'
+                        width:'220'
                     },{
                         field:'name',
                         title:'申请名称',
-                        width:'200'
+                        width:'160'
                     },{
                         field:'type',
                         title:'类型',
-                        width:'100',
+                        width:'40',
                         formatter: function(value) {
                             var rtn = '';
                             switch(value) {
@@ -129,31 +130,20 @@
                     },{
                         field:'customer',
                         title:'申请人',
-                        width:'150',
-                        formatter: function(){
-
-                        }
+                        width:'130'
                     },{
                         field:'nexthandeler',
                         title:'当前处理人',
                         width:'150',
-                        formatter: function(){
 
-                        }
                     },{
                         field:'handeltime',
                         title:'处理期限',
-                        width:'120',
-                        formatter: function(){
-
-                        }
+                        width:'100'
                     },{
                         field:'createtime',
                         title:'创建时间',
-                        width:'120',
-                        formatter: function(){
-
-                        }
+                        width:'100'
                     },{
                         field:'_opt',
                         title:'操作',
@@ -167,10 +157,38 @@
                 onLoadSuccess: function(){
                     $('.detailcls').linkbutton({text:'查看',plain:true,iconCls:'icon-search'});
                     $('.editcls').linkbutton({text:'处理',plain:true,iconCls:'icon-edit'});
+                    $('.detailcls').on('click', function(){
+                        setTimeout(open_detail, 100);
+                    });
                 }
 
             });
         }, 100);
+
+        // 加载模块名称下拉框
+        $.ajax({
+            url: "<?php echo $ctrl_url.'/customers'?>",
+            type: 'get',
+            datatype: 'json',
+            success: function(result) {
+                var data = $.parseJSON(result);
+                console.log(data);
+                var new_data = new Array();
+                new_data.push({"showname":"不限", "id":-1, "selected":true});
+                $.each(data.rows, function(i, n) {
+                    new_data.push({"showname":n.user_name, 'id': n.id});
+                });
+                $("#id_code").combobox("loadData", new_data);
+            }
+        });
+
+        $('#id_code').combobox({
+            onSelect: function(node) {
+                console.log(node);
+                var n = node.showname.replace(/&nbsp;/ig, '');
+                $('#id_code').combobox('setText', n);
+            }
+        })
     });
 
     // 切换主面板
@@ -216,7 +234,7 @@
             $.messager.alert('操作提示', '请选择需要查看的记录！', 'warning');
             return;
         }
-        cur_tips_id = info['id'];
+        cur_tips_id = info['applyid'];
         var url='<?php echo $ctrl_url.'/details/'?>' + cur_tips_id;
         $('#manage_edit').attr('src',url);
         change_panel('details');

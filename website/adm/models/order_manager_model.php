@@ -42,9 +42,35 @@ class order_manager_model extends MY_Model {
         if(count($order)==0) {
             $order[] = ' createtime desc';
         }
-        $datas = $this->db->get_page($this->table, $this->fields, $where, $order, $page);
-
+        $group_by = array('applyid');
+        $datas = $this->db->get_page($this->table, $this->fields, $where, $order, $page, $group_by);
         $datas['total'] = count($datas['rows']);
+
+        $this->load->model('sys/user_model', 'user_model');
+        $this->load->model('customer_manager_model', 'customer_model');
+        $CI = &get_instance();
+        foreach($datas['rows'] as $k=>&$v) {
+            if($userinfo=$CI->user_model->get_userinfo_by_id($v['createuser'])) {
+                $v['createuser'] = $userinfo['true_name'];
+            } else {
+                $v['createuser'] = '';
+            }
+            if($userinfo=$CI->user_model->get_userinfo_by_id($v['nexthandeler'])) {
+                $v['nexthandeler'] = $userinfo['true_name'];
+            } else {
+                $v['nexthandeler'] = '';
+            }
+            if($cumtomer=$CI->customer_model->get_info($v['customer'])) {
+                $v['customer'] = $cumtomer['user_name'];
+            } else {
+                $v['customer'] = '';
+            }
+            $v['handeltime'] = date('Y-m-d', $v['handeltime']);
+            $v['registerdate'] = date('Y-m-d', $v['registerdate']);
+            $v['registrationdate'] = date('Y-m-d', $v['registrationdate']);
+            $v['createtime'] = date('Y-m-d', $v['createtime']);
+        }
+
         return $datas;
     }
 
@@ -54,8 +80,8 @@ class order_manager_model extends MY_Model {
             return array();
         }
         $result = array();
-
         $query = $this->db->select($this->fields)->where('applyid', $applyid)->get($this->table);
+        // var_dump($this->db->last_query());
         $result = $query->row_array();
 
         return $result;
@@ -98,7 +124,7 @@ class order_manager_model extends MY_Model {
             'isbillout' => get_value($info, 'isbillout', 0),
             'registrationdate' => get_value($info, 'registrationdate', 0),
             'isend' => get_value($info, 'isend', 0),
-            'createuser' => $this->session->userdata('user_name'),
+            'createuser' => $this->session->userdata('user_id'),
             'createtime' => time()
         );
 

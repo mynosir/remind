@@ -59,6 +59,13 @@ class customer_manager_model extends MY_Model {
         return $datas;
     }
 
+    public function getList() {
+
+        $datas = $this->db->get_list($this->table, $this->fields);
+
+        return $datas;
+    }
+
 
     public function get_info($id) {
         if($id<0) {

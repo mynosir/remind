@@ -57,7 +57,7 @@
                                 申请人:
                             </td>
                             <td>
-                                <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'name'" panelHeight="auto" >
+                                <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" >
                                 </select>
                             </td>
                             <td>
@@ -157,7 +157,7 @@
                                 下一步责任人：
                             </td>
                             <td>
-                                <select id="nexthandeler" class="easyui-combobox" style="width:200px;" name="nexthandeler" data-options="valueField:'id',textField:'name'" panelHeight="auto" >
+                                <select id="nexthandeler" class="easyui-combobox" style="width:200px;" name="nexthandeler" data-options="valueField:'user_id',textField:'true_name'" panelHeight="auto" >
                                 </select>
                             </td>
                             <td>
@@ -202,6 +202,56 @@
             } else {
                 $('#islater').closest('tr').removeClass('dn');
                 $.parser.parse($('#islater').html());
+            }
+        });
+
+        // 加载申请人下拉框
+        $.ajax({
+            url: "<?php echo $ctrl_url.'/customers'?>",
+            type: 'get',
+            datatype: 'json',
+            success: function(result) {
+                var data = $.parseJSON(result);
+                console.log(data);
+                var new_data = new Array();
+                new_data.push({"showname":"请选择", "id":-1, "selected":true});
+                $.each(data.rows, function(i, n) {
+                    new_data.push({"showname":n.user_name, 'id': n.id});
+                });
+                $("#customer").combobox("loadData", new_data);
+            }
+        });
+
+        $('#customer').combobox({
+            onSelect: function(node) {
+                console.log(node);
+                var n = node.showname.replace(/&nbsp;/ig, '');
+                $('#customer').combobox('setText', n);
+            }
+        });
+
+        // 加载处理人下拉框
+        $.ajax({
+            url: "<?php echo base_url('sys/user/get?actionxm=get_list')?>",
+            type: 'get',
+            datatype: 'json',
+            success: function(result) {
+                var data = $.parseJSON(result);
+                console.log(data);
+                var new_data = new Array();
+                new_data.push({"true_name":"请选择", "user_id":-1, "selected":true});
+                $.each(data, function(i, n) {
+                    new_data.push({"true_name":n.true_name, 'user_id': n.user_id});
+                });
+                $("#nexthandeler").combobox("loadData", new_data);
+            }
+        });
+
+        $('#nexthandeler').combobox({
+            onSelect: function(node) {
+                console.log(node);
+                var n = node.true_name.replace(/&nbsp;/ig, '');
+                $('#nexthandeler').combobox('setText', n);
             }
         })
     })();
