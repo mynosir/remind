@@ -6,7 +6,7 @@
             'css'=>array(),
             'js' =>array('jquery.easyui.extension/datagrid-detailview'),
         ));
-        $ctrl_url = base_url('orders/on_handel_order');
+        $ctrl_url = base_url('orders/order_undone_manager');
     ?>
     <style>
     .split-line {
@@ -35,26 +35,18 @@
                toolbar="#toolbar" multiSort="true"
                rownumbers="false" pagination="true" pageList="[50,100,150,200]" pageSize="50"
                singleSelect="true" remote>
-            <!-- <thead>
-                <tr>
-                    <th data-options="sortable:true,field:'id',width:50">订单号</th>
-                    <th data-options="sortable:true,field:'user_name',width:200">申请名称</th>
-                    <th data-options="sortable:true,field:'type',width:150" formatter="format_type">类型</th>
-                    <th data-options="sortable:true,field:'id_code',width:150">申请人</th>
-                    <th data-options="sortable:true,field:'address',width:150">创建时间</th>
-                    <th data-options="sortable:true,field:'zip_code',width:150">当前处理人</th>
-                    <th data-options="sortable:true,field:'linkman',width:200">操作</th>
-                </tr>
-            </thead> -->
         </table>
 
         <div id="toolbar" style="padding:2px 3px;">
             <form id="fm-search" method="post" novalidate>
                 <div style="margin:3px 0;">
+                    <input type="hidden" id="isend" name="isend" value="0" />
+                    <input type="hidden" id="nexthandeler" name="nexthandeler" value="<?php echo $user_id; ?>"/>
                     申请名称：
-                    <input id="user_name" class="easyui-textbox" style="width:100px" name="user_name">
+                    <input id="name" class="easyui-textbox" style="width:100px" name="name">
                     申请人：
-                    <input id="id_code" class="easyui-textbox" style="width:100px" name="id_code">
+                    <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" >
+                    </select>
                     客户类型：
                     <select id="type" class="textbox-text" name="type" style="width:80px;">
                         <option value="-1" selected="selected">不限</option>
@@ -63,11 +55,6 @@
                         <option value="2">版权</option>
                         <option value="3">其他</option>
                     </select>
-                    <span class="split-line">|</span>
-                    创建时间：
-                    <input class="easyui-datebox" style="width:150px;" name="start_time" id="start_time">
-                    到
-                    <input class="easyui-datebox" style="width:150px;" name="end_time" id="end_time">
                     <span class="split-line">|</span>
                     <a class="easyui-linkbutton" iconCls="icon-search" onclick="do_search()" style="width:60px">搜索</a>
                 </div>
@@ -93,15 +80,15 @@
                     {
                         field:'applyid',
                         title:'订单号',
-                        width:'50'
+                        width:'250'
                     },{
                         field:'name',
                         title:'申请名称',
-                        width:'200'
+                        width:'190'
                     },{
                         field:'type',
                         title:'类型',
-                        width:'100',
+                        width:'40',
                         formatter: function(value) {
                             var rtn = '';
                             switch(value) {
@@ -126,37 +113,25 @@
                     },{
                         field:'customer',
                         title:'申请人',
-                        width:'150',
-                        formatter: function(){
-
-                        }
+                        width:'100'
                     },{
                         field:'nexthandeler',
                         title:'当前处理人',
-                        width:'150',
-                        formatter: function(){
-
-                        }
+                        width:'120'
                     },{
                         field:'handeltime',
                         title:'处理期限',
-                        width:'120',
-                        formatter: function(){
-
-                        }
+                        width:'100'
                     },{
                         field:'createtime',
                         title:'创建时间',
-                        width:'120',
-                        formatter: function(){
-
-                        }
+                        width:'100'
                     },{
                         field:'_opt',
                         title:'操作',
-                        width:'130',
+                        width:'120',
                         formatter: function(){
-                            var html = '<a class="detailcls" icon="icon-search">查看</a>&nbsp;&nbsp;<a class="editcls" icon="icon-edit">处理</a>'
+                            var html = '<a class="detailcls" icon="icon-search">查看</a>&nbsp;<a class="editcls" icon="icon-edit">处理</a>'
                             return html;
                         }
                     }
@@ -164,9 +139,40 @@
                 onLoadSuccess: function(){
                     $('.detailcls').linkbutton({text:'查看',plain:true,iconCls:'icon-search'});
                     $('.editcls').linkbutton({text:'处理',plain:true,iconCls:'icon-edit'});
+                    $('.detailcls').on('click', function(){
+                        setTimeout(open_detail, 100);
+                    });
+                    $('.editcls').on('click', function(){
+                        setTimeout(open_operate, 100);
+                    });
                 }
             });
         }, 100);
+
+        // 加载申请人下拉框
+        $.ajax({
+            url: "<?php echo $ctrl_url.'/customers'?>",
+            type: 'get',
+            datatype: 'json',
+            success: function(result) {
+                var data = $.parseJSON(result);
+                console.log(data);
+                var new_data = new Array();
+                new_data.push({"showname":"不限", "id":-1, "selected":true});
+                $.each(data.rows, function(i, n) {
+                    new_data.push({"showname":n.user_name, 'id': n.id});
+                });
+                $("#customer").combobox("loadData", new_data);
+            }
+        });
+
+        $('#customer').combobox({
+            onSelect: function(node) {
+                console.log(node);
+                var n = node.showname.replace(/&nbsp;/ig, '');
+                $('#customer').combobox('setText', n);
+            }
+        })
     });
 
     // 切换主面板
@@ -185,6 +191,19 @@
         $('#dg').datagrid('reload');
     }
 
+    // 处理
+    function open_operate() {
+        var info = $('#dg').datagrid('getSelected');
+        if(info==null) {
+            $.messager.alert('操作提示', '请选择需要处理的记录！', 'warning');
+            return;
+        }
+        var cur_tips_id = info['id'];
+        var url = '<?php echo $ctrl_url.'/info/'?>' + cur_tips_id;
+        $('#manage_edit').attr('src',url);
+        change_panel('edit');
+    }
+
     // 查看详情
     function open_detail() {
         var info = $('#dg').datagrid('getSelected');
@@ -192,7 +211,7 @@
             $.messager.alert('操作提示', '请选择需要查看的记录！', 'warning');
             return;
         }
-        cur_tips_id = info['id'];
+        var cur_tips_id = info['applyid'];
         var url='<?php echo $ctrl_url.'/details/'?>' + cur_tips_id;
         $('#manage_edit').attr('src',url);
         change_panel('details');

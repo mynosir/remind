@@ -44,8 +44,11 @@ class order_undone_manager extends MY_Controller {
             'actionxm' => 'insert',
             'info' => array()
         );
-        if($applyid != 0) {
+        if($applyid != '0') {
             $info = $this->def_model->get_info($applyid);
+            $data['isend'] = $info[0]['isend'];
+            $data['applyid'] = $info[0]['applyid'];
+
             $data['info'] = $info;
             $this->load->view('orders/info/info', $data);
         }else{
@@ -74,6 +77,29 @@ class order_undone_manager extends MY_Controller {
                 $id = $this->get_request('id');
                 $result = $this->def_model->get_detail($id);
                 echo $result;
+                break;
+            case 'stepsinfo':
+                $this->load->config('order');
+                $config = $this->config->item('corder');
+                $applyid = $this->get_request('applyid');
+                $info = $this->def_model->get_info($applyid, 'DESC', 'Y');
+                $renddata = array();
+                foreach ($info as $k =>& $v) {
+                    foreach ($v as $kk => $vv) {
+                        if(isset($config['step_'.$v['handelpoint']][$kk])) {
+                            $renddata[] = array(
+                                'name' =>  $config['step_'.$v['handelpoint']][$kk],
+                                'value' => $vv,
+                                'group' => '步骤'.$v['step']
+                            );
+                        }
+                    }
+                }
+                $result = array(
+                    'total' => count($renddata),
+                    'rows' => $renddata
+                );
+                echo json_encode($result);
                 break;
         }
     }

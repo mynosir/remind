@@ -74,3 +74,7 @@ ALTER TABLE `corder` ADD `createuser` VARCHAR(32) NULL COMMENT '创建者' AFTER
 ALTER TABLE `corder` ADD `createtime` int(11) COMMENT '创建时间' AFTER `registrationdate`;
 ALTER TABLE `corder` ADD `isend` tinyint(2) default 0 COMMENT '是否处理完成' AFTER `registrationdate`;
 
+-- jinmengjie 20160820
+-- corder新增字段flag-当前节点是否已过
+ALTER TABLE `corder` ADD `flag` TINYINT(2) NULL COMMENT '当前节点是否已过' AFTER `registrationdate`;
+

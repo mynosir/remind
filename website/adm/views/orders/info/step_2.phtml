@@ -100,7 +100,7 @@
                             <td style="text-align:center;" colspan="2">
                                 <button type="button" class="easyui-linkbutton" style="width:90px" onclick="do_save()">保存</button>
                                 &nbsp;&nbsp;&nbsp;&nbsp;
-                                <button id="return_btn" type="button" class="easyui-linkbutton" style="width:90px" onclick="do_return(this)">回退</button>
+                                <button id="return_btn" type="button" class="easyui-linkbutton" style="width:90px" onclick="do_return()">回退</button>
                             </td>
                             <td>&nbsp;</td>
                         </tr>
@@ -142,7 +142,7 @@
     })();
 
     // 流程部产权局节点回退处理
-    function do_return(e) {
+    function do_return() {
         var $target = $('#return_btn');
         $target.linkbutton("disable");
         $('.js_back_step').removeClass('dn');

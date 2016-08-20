@@ -29,7 +29,10 @@
         <div data-options="region:'center'" style="overflow:hidden;" border="false">
             <div id="p-edit-login" class="easyui-panel" fit="true" border="false" style="overflow:auto;">
                 <div class="easyui-panel" style="padding:15px 5px;">
-                    <span>订单已完成</span>.<span class="split-line">|</span>
+                    <span><?php if($isend=='1'){echo "订单已完成";}else{echo "订单进行中";} ?></span>.
+                    <span class="split-line">|</span>
+                    <span><?php if(isset($applyid)){echo '订单号为：'.$applyid;} ?></span>.
+                    <span class="split-line">|</span>
                     订单处理流程明细：
                 </div>
                 <table id="pg" style="width:100%"></table>
@@ -40,17 +43,12 @@
 
 <script type="text/javascript">
     (function(){
+        var applyid = "<?php echo $applyid; ?>";
         $('#pg').propertygrid({
-            url: 'get_data.php',
+            url: "<?php echo $ctrl_url.'/get?actionxm=stepsinfo&applyid=" + applyid + "'?>",
             showGroup: true,
             scrollbarSize: 0
         });
-        var row = {
-            name:'AddName',
-            value:'',
-            group:'Marketing Settings'
-        };
-        $('#pg').propertygrid('appendRow',row);
     })();
 
 </script>

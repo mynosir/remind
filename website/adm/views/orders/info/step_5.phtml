@@ -31,6 +31,9 @@
                 <form id="fm-edit" method="post" style="width:90%; margin:10px;">
                     <input type="hidden" name="actionxm" value="<?php echo $actionxm; ?>" />
                     <input type="hidden" name="id" value="<?php echo get_value($info, 'id', '0'); ?>">
+                    <input type="hidden" name="applyid" value="<?php echo get_value($info, 'applyid', '0'); ?>">
+                    <input type="hidden" name="step" value="<?php echo get_value($info, 'step', '6'); ?>" />
+                    <input type="hidden" name="handelpoint" value="5" />
                     <table class="fm-table" cellpadding="8px">
                         <colgroup>
                             <col width="240px"  />
@@ -43,7 +46,7 @@
                                 登记发文日：
                             </td>
                             <td>
-                                <input class="easyui-datebox" style="width:150px;" name="start_time" id="start_time" data-options="required:true">
+                                <input class="easyui-datebox" style="width:150px;" name="registrationdate" id="registrationdate" data-options="required:true">
                             </td>
                             <td>
                                 <span style="color:red;"></span>
@@ -57,11 +60,11 @@
                             <td>
                                 <select id="nextid" name="nextid" style="width:auto;">
                                     <!-- <option value="0" >订单管理（市场部）</option> -->
-                                    <option value="1" selected="selected">任务处理（专利编制人）</option>
+                                    <option value="1" >任务处理（专利编制人）</option>
                                     <option value="2" >流程部（产权局沟通）</option>
                                     <option value="4" >财务缴费</option>
                                     <!-- <option value="5" >流程部（登记发文日）</option> -->
-                                    <option value="6" >财务（确认完成交款）</option>
+                                    <option value="6" selected="selected">财务（确认完成交款）</option>
                                 </select>
                             </td>
                             <td>
@@ -74,7 +77,7 @@
                                 处理期限：
                             </td>
                             <td>
-                                <input class="easyui-datebox" style="width:150px;" name="start_time" id="start_time" data-options="required:true">
+                                <input class="easyui-datebox" style="width:150px;" name="handeltime" id="handeltime" data-options="required:true">
                             </td>
                             <td>
                                 <span style="color:red;"></span>
@@ -86,7 +89,7 @@
                                 下一步责任人：
                             </td>
                             <td>
-                                <select id="branch_id" class="easyui-combobox" style="width:200px;" name="branch_id" data-options="valueField:'id',textField:'name'" panelHeight="auto" >
+                                <select id="nexthandeler" class="easyui-combobox" style="width:200px;" name="nexthandeler" data-options="valueField:'user_id',textField:'true_name'" panelHeight="auto" >
                                 </select>
                             </td>
                             <td>
@@ -112,7 +115,30 @@
 
 <script type="text/javascript">
     (function(){
+        // 加载处理人下拉框
+        $.ajax({
+            url: "<?php echo base_url('sys/user/get?actionxm=get_list')?>",
+            type: 'get',
+            datatype: 'json',
+            success: function(result) {
+                var data = $.parseJSON(result);
+                console.log(data);
+                var new_data = new Array();
+                new_data.push({"true_name":"请选择", "user_id":-1, "selected":true});
+                $.each(data, function(i, n) {
+                    new_data.push({"true_name":n.true_name, 'user_id': n.user_id});
+                });
+                $("#nexthandeler").combobox("loadData", new_data);
+            }
+        });
 
+        $('#nexthandeler').combobox({
+            onSelect: function(node) {
+                console.log(node);
+                var n = node.true_name.replace(/&nbsp;/ig, '');
+                $('#nexthandeler').combobox('setText', n);
+            }
+        })
     })();
 
     // 保存登录tips信息
