@@ -40,7 +40,7 @@ class order_manager_model extends MY_Model {
         }
 
         if(count($order)==0) {
-            $order[] = ' createtime desc';
+            $order[] = 'createtime desc';
         }
         $group_by = array('applyid');
         $datas = $this->db->get_page($this->table, $this->fields, $where, $order, $page, $group_by);
@@ -50,6 +50,14 @@ class order_manager_model extends MY_Model {
         $this->load->model('customer_manager_model', 'customer_model');
         $CI = &get_instance();
         foreach($datas['rows'] as $k=>&$v) {
+            // 因gruop by无法组内排序，查询替换最新数据
+            $items = $this->get_info($v['applyid']);
+            $v['id'] = $items[0]['id'];
+            $v['handeltime'] = $items[0]['handeltime'];
+            $v['nexthandeler'] = $items[0]['nexthandeler'];
+            $v['nextid'] = $items[0]['nextid'];
+            $v['step'] = $items[0]['step'];
+
             if($userinfo=$CI->user_model->get_userinfo_by_id($v['createuser'])) {
                 $v['createuser'] = $userinfo['true_name'];
             } else {
@@ -65,12 +73,13 @@ class order_manager_model extends MY_Model {
             } else {
                 $v['customer'] = '';
             }
+
             $v['handeltime'] = date('Y-m-d', $v['handeltime']);
             $v['registerdate'] = date('Y-m-d', $v['registerdate']);
             $v['registrationdate'] = date('Y-m-d', $v['registrationdate']);
             $v['createtime'] = date('Y-m-d', $v['createtime']);
-        }
 
+        }
         return $datas;
     }
 
@@ -80,10 +89,19 @@ class order_manager_model extends MY_Model {
             return array();
         }
         $result = array();
-        $query = $this->db->select($this->fields)->where('applyid', $applyid)->get($this->table);
-        // var_dump($this->db->last_query());
-        $result = $query->row_array();
+        $query = $this->db->select($this->fields)->where('applyid', $applyid)->order_by('createtime', 'DESC')->get($this->table);
+        // var_dump($this->db->last_query());exit();
+        $result = $query->result_array();
+        return $result;
+    }
 
+    public function get_info_byid($id) {
+        if($id<0) {
+            return array();
+        }
+        $result = array();
+        $query = $this->db->select($this->fields)->where('id', $id)->get($this->table);
+        $result = $query->row_array();
         return $result;
     }
 
@@ -102,12 +120,20 @@ class order_manager_model extends MY_Model {
             }
         }
 
+        if ($info['handelpoint']=='2' && $info['handeltime']=='' && $info['nexthandeler']=='-1') {
+            // 因gruop by无法组内排序，查询替换最新数据
+            $items = $this->get_info($info['applyid']);
+            $info['handeltime'] = date('Y-m-d', $items[0]['handeltime']);
+            $info['nexthandeler'] = $items[0]['nexthandeler'];
+            $info['nextid'] = 3;
+        }
+
         $data = array(
             'applyid' => get_value($info, 'applyid'),
             'name' => get_value($info, 'name'),
             'customer' => get_value($info, 'customer'),
-            'type' => get_value($info, 'type'),
-            'islater' => get_value($info, 'islater'),
+            'type' => get_value($info, 'type', 0),
+            'islater' => get_value($info, 'islater', 0),
             'billinfo' => get_value($info, 'billinfo'),
             'receiptinfo' => get_value($info, 'receiptinfo'),
             'handelpoint' => get_value($info, 'handelpoint'),
@@ -127,6 +153,8 @@ class order_manager_model extends MY_Model {
             'createuser' => $this->session->userdata('user_id'),
             'createtime' => time()
         );
+
+
 
         $this->db->insert($this->table, $data);
         // die($this->db->last_query());

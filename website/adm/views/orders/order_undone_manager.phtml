@@ -160,6 +160,9 @@
                     $('.detailcls').on('click', function(){
                         setTimeout(open_detail, 100);
                     });
+                    $('.editcls').on('click', function(){
+                        setTimeout(open_operate, 100);
+                    });
                 }
 
             });
@@ -215,13 +218,13 @@
     }
 
     // 处理
-    function open_update() {
+    function open_operate() {
         var info = $('#dg').datagrid('getSelected');
         if(info==null) {
             $.messager.alert('操作提示', '请选择需要处理的记录！', 'warning');
             return;
         }
-        cur_tips_id = info['id'];
+        var cur_tips_id = info['id'];
         var url = '<?php echo $ctrl_url.'/info/'?>' + cur_tips_id;
         $('#manage_edit').attr('src',url);
         change_panel('edit');
@@ -234,7 +237,7 @@
             $.messager.alert('操作提示', '请选择需要查看的记录！', 'warning');
             return;
         }
-        cur_tips_id = info['applyid'];
+        var cur_tips_id = info['applyid'];
         var url='<?php echo $ctrl_url.'/details/'?>' + cur_tips_id;
         $('#manage_edit').attr('src',url);
         change_panel('details');

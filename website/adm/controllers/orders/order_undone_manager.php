@@ -26,8 +26,12 @@ class order_undone_manager extends MY_Controller {
             'info' => array()
         );
         if(intval($id)>0) {
-            $data['actionxm'] = 'update';
-            //TODO:
+            $data['actionxm'] = 'insert';
+            $info = $this->def_model->get_info_byid($id);
+            $info['step'] = intval($info['step']) + 1;
+            $data['info'] = $info;
+            $nextid = $info['nextid'];
+            $this->load->view('orders/info/step_'.$nextid, $data);
         }else{
             $this->load->view('orders/info/step_0', $data);
         }
