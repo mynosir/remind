@@ -55,7 +55,6 @@ class order_manager_model extends MY_Model {
         if(count($order)==0) {
             $order[] = 'createtime desc';
         }
-
         // var_dump($where);exit();
 
         $group_by = array('applyid');
@@ -101,54 +100,55 @@ class order_manager_model extends MY_Model {
         // var_dump($this->db->last_query());exit();
         $result = $query->result_array();
         if ($frompage=='Y') {
-            $this->load->model('sys/user_model', 'user_model');
-            $this->load->model('customer_manager_model', 'customer_model');
-            $CI = &get_instance();
-            foreach($result as $k=>&$v) {
-                if($userinfo=$CI->user_model->get_userinfo_by_id($v['createuser'])) {
-                    $v['createuser'] = $userinfo['true_name'];
-                } else {
-                    $v['createuser'] = '';
-                }
-                if($userinfo=$CI->user_model->get_userinfo_by_id($v['nexthandeler'])) {
-                    $v['nexthandeler'] = $userinfo['true_name'];
-                } else {
-                    $v['nexthandeler'] = '';
-                }
-                if($customer=$CI->customer_model->get_info($v['customer'])) {
-                    $v['customer'] = $customer['user_name'];
-                } else {
-                    $v['customer'] = '';
-                }
-                if($v['type']=='0') {
-                    $v['type'] = '商标';
-                } else if ($v['type']=='1') {
-                    $v['type'] = '专利';
-                } else if ($v['type']=='2') {
-                    $v['type'] = '版权';
-                } else if ($v['type']=='3') {
-                    $v['type'] = '其他';
-                }
-                $v['islater'] = $v['islater']=='1' ? '是' : '否';
-                $v['ispaid'] = $v['ispaid']=='1' ? '是' : '否';
-                $v['isslowdown'] = $v['isslowdown']=='1' ? '是' : '否';
-                $v['isbillout'] = $v['isbillout']=='1' ? '是' : '否';
-                $v['isend'] = $v['isend']=='1' ? '是' : '否';
-                if($v['type']!='1') {
-                    unset($v['islater']);
-                }
-
-                $v['handeltime'] = date('Y-m-d', $v['handeltime']);
-                $v['registerdate'] = date('Y-m-d', $v['registerdate']);
-                $v['registrationdate'] = date('Y-m-d', $v['registrationdate']);
-                $v['createtime'] = date('Y-m-d', $v['createtime']);
-            }
+            $result = $this->formatFields($result);
         }
         return $result;
     }
 
-    private function formatFields() {
+    private function formatFields($result) {
+        $this->load->model('sys/user_model', 'user_model');
+        $this->load->model('customer_manager_model', 'customer_model');
+        $CI = &get_instance();
+        foreach($result as $k=>&$v) {
+            if($userinfo=$CI->user_model->get_userinfo_by_id($v['createuser'])) {
+                $v['createuser'] = $userinfo['true_name'];
+            } else {
+                $v['createuser'] = '';
+            }
+            if($userinfo=$CI->user_model->get_userinfo_by_id($v['nexthandeler'])) {
+                $v['nexthandeler'] = $userinfo['true_name'];
+            } else {
+                $v['nexthandeler'] = '';
+            }
+            if($customer=$CI->customer_model->get_info($v['customer'])) {
+                $v['customer'] = $customer['user_name'];
+            } else {
+                $v['customer'] = '';
+            }
+            if($v['type']=='0') {
+                $v['type'] = '商标';
+            } else if ($v['type']=='1') {
+                $v['type'] = '专利';
+            } else if ($v['type']=='2') {
+                $v['type'] = '版权';
+            } else if ($v['type']=='3') {
+                $v['type'] = '其他';
+            }
+            $v['islater'] = $v['islater']=='1' ? '是' : '否';
+            $v['ispaid'] = $v['ispaid']=='1' ? '是' : '否';
+            $v['isslowdown'] = $v['isslowdown']=='1' ? '是' : '否';
+            $v['isbillout'] = $v['isbillout']=='1' ? '是' : '否';
+            $v['isend'] = $v['isend']=='1' ? '是' : '否';
+            if($v['type']!='1') {
+                unset($v['islater']);
+            }
 
+            $v['handeltime'] = date('Y-m-d', $v['handeltime']);
+            $v['registerdate'] = date('Y-m-d', $v['registerdate']);
+            $v['registrationdate'] = date('Y-m-d', $v['registrationdate']);
+            $v['createtime'] = date('Y-m-d', $v['createtime']);
+        }
+        return $result;
     }
 
     public function get_info_byid($id) {

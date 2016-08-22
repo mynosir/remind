@@ -23,9 +23,6 @@
 <body>
 <div id="p-edit" class="easyui-panel" title="" fit="true" border="false">
     <div class="easyui-layout" fit="true">
-        <div data-options="region:'north'" style="height:28px;overflow:hidden;background-color:#dddddd;" border="false">
-            <button class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="javascript:window.parent.change_panel('dg');">返回</button>
-        </div>
         <div data-options="region:'center'" style="overflow:hidden;" border="false">
             <div id="p-edit-login" class="easyui-panel" fit="true" border="false" style="overflow:auto;">
                 <form id="fm-edit" method="post" style="width:90%; margin:10px;">
@@ -270,13 +267,13 @@
                     $('#fm-edit input[name="actionxm"]').val('update');
                     $('#fm-edit input[name="tips_id"]').val(cur_tips_id);
                     $.messager.alert('操作提示', '保存成功', 'info', function() {
-                        window.parent.dg_reload();
-                        window.parent.change_panel('dg');
+                        // $('#p-edit').panel('open').panel('refresh');
                     });
                 }
             }
         })
     }
+
 
 </script>
 

@@ -79,7 +79,7 @@ class order_undone_manager extends MY_Controller {
                 echo $result;
                 break;
             case 'stepsinfo':
-                $this->load->config('order');
+                $this->load->config('corder');
                 $config = $this->config->item('corder');
                 $applyid = $this->get_request('applyid');
                 $info = $this->def_model->get_info($applyid, 'DESC', 'Y');
@@ -90,7 +90,7 @@ class order_undone_manager extends MY_Controller {
                             $renddata[] = array(
                                 'name' =>  $config['step_'.$v['handelpoint']][$kk],
                                 'value' => $vv,
-                                'group' => '步骤'.$v['step']
+                                'group' => '步骤'.$v['step'].' - '.$config['step'][$v['handelpoint']]
                             );
                         }
                     }
@@ -103,7 +103,6 @@ class order_undone_manager extends MY_Controller {
                 break;
         }
     }
-
 
     public function post() {
         $actionxm = $this->get_request('actionxm');
