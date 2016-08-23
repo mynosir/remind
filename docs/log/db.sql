@@ -78,3 +78,7 @@ ALTER TABLE `corder` ADD `isend` tinyint(2) default 0 COMMENT '是否处理完�
 -- corder新增字段flag-当前节点是否已过
 ALTER TABLE `corder` ADD `flag` TINYINT(2) NULL COMMENT '当前节点是否已过' AFTER `registrationdate`;
 
+-- jinmengjie 20160823
+-- corder表中增加customer字段索引
+ALTER TABLE `corder` ADD INDEX(` customer `);
+

@@ -6,7 +6,7 @@
             'css'=>array(),
             'js' =>array('jquery.easyui.extension/datagrid-detailview'),
         ));
-        $ctrl_url = base_url('orders/order_undone_manager');
+        $ctrl_url = base_url('count/count_manager');
     ?>
     <style>
     .split-line {
@@ -29,7 +29,7 @@
     </style>
 </head>
 <body>
-    <div id="p-dg" class="easyui-panel" title="订单信息管理" fit="true" border="false">
+    <div id="p-dg" class="easyui-panel" title="订单报表管理" fit="true" border="false">
         <table id="dg" class="easyui-datagrid" title=""
                fit="true" border="false" plain="true"
                toolbar="#toolbar" multiSort="true"
@@ -40,19 +40,9 @@
         <div id="toolbar" style="padding:2px 3px;">
             <form id="fm-search" method="post" novalidate>
                 <div style="margin:3px 0;">
-                    <input type="hidden" id="isend" name="isend" value="0" />
-                    申请名称：
-                    <input id="name" class="easyui-textbox" style="width:100px" name="name">
+                    <input type="hidden" id="step" name="step" value="1" />
                     申请人：
                     <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" >
-                    </select>
-                    类型：
-                    <select id="type" class="textbox-text" name="type" style="width:80px;">
-                        <option value="-1" selected="selected">不限</option>
-                        <option value="0">商标</option>
-                        <option value="1">专利</option>
-                        <option value="2">版权</option>
-                        <option value="3">其他</option>
                     </select>
                     <span class="split-line">|</span>
                     <a class="easyui-linkbutton" iconCls="icon-search" onclick="do_search()" style="width:60px">搜索</a>
@@ -61,7 +51,7 @@
         </div>
     </div>
 
-    <div id="p-edit" class="easyui-panel" title="订单详情" fit="true" border="false">
+    <div id="p-dg1" class="easyui-panel" title="个人订单汇总" fit="true" border="false">
         <iframe id="manage_edit" style="width:100%;height:99%;border:0;" frameborder="0" scrolling="true" ></iframe>
     </div>
 
@@ -77,72 +67,65 @@
                 queryParams: obj,
                 columns:[[
                     {
-                        field:'applyid',
-                        title:'订单号',
-                        width:'250'
-                    },{
-                        field:'name',
-                        title:'申请名称',
-                        width:'170'
-                    },{
-                        field:'type',
-                        title:'类型',
-                        width:'40',
-                        formatter: function(value) {
-                            var rtn = '';
-                            switch(value) {
-                                case '0':
-                                    rtn = '<span>商标</span>';
-                                    break;
-                                case '1':
-                                    rtn = '<span>专利</span>';
-                                    break;
-                                case '2':
-                                    rtn = '<span>版权</span>';
-                                    break;
-                                case '3':
-                                    rtn = '<span>其他</span>';
-                                    break;
-                                default:
-                                    rtn = '<span style="color:grey;">未知</span>';
-                                    break;
-                            }
-                            return rtn;
+                        field:'customername',
+                        title:'申请人',
+                        width:'250',
+                        formatter: function(value){
+                            console.log(value);
+                            var html = '<a class="detailcls" icon="icon-search">'+ value +'</a>'
+                            return html;
                         }
                     },{
                         field:'customer',
-                        title:'申请人',
-                        width:'130'
+                        title:'客户id',
+                        width:'100',
+                        hidden: true,
+                        formatter: function(value){
+                            return value;
+                        }
                     },{
-                        field:'nexthandeler',
-                        title:'当前处理人',
-                        width:'150',
-
+                        field:'type_0',
+                        title:'商标数',
+                        width:'100',
+                        formatter: function(value){
+                            return value || '0';
+                        }
                     },{
-                        field:'handeltime',
-                        title:'处理期限',
-                        width:'100'
+                        field:'type_1',
+                        title:'专利数',
+                        width:'100',
+                        formatter: function(value){
+                            return value || '0';
+                        }
                     },{
-                        field:'createtime',
-                        title:'分配时间',
-                        width:'100'
+                        field:'type_2',
+                        title:'版权数',
+                        width:'100',
+                        formatter: function(value){
+                            return value || '0';
+                        }
                     },{
-                        field:'_opt',
-                        title:'操作',
-                        width:'80',
-                        formatter: function(){
-                            var html = '<a class="detailcls" icon="icon-search">查看</a>'
-                            return html;
+                        field:'type_3',
+                        title:'其他数',
+                        width:'100',
+                        formatter: function(value){
+                            return value || '0';
+                        }
+                    },{
+                        field:'count_total',
+                        title:'总计',
+                        width:'100',
+                        formatter: function(value, res){
+                            return parseInt(res.type_0 || '0') + parseInt(res.type_1 || '0') + parseInt(res.type_2 || '0') + parseInt(res.type_3 || '0');
                         }
                     }
                 ]],
                 onLoadSuccess: function(){
-                    $('.detailcls').linkbutton({text:'查看',plain:true,iconCls:'icon-search'});
+                    $('.detailcls').linkbutton({plain:true,iconCls:'icon-search'});
                     $('.detailcls').on('click', function(){
                         setTimeout(open_detail, 100);
                     });
                 }
-
             });
         }, 100);
 
@@ -176,10 +159,10 @@
     function change_panel($name) {
         if($name=='dg') {
             $('#p-dg').panel('open');
-            $('#p-edit').panel('close');
+            $('#p-dg1').panel('close');
         } else {
             $('#p-dg').panel('close');
-            $('#p-edit').panel('open');
+            $('#p-dg1').panel('open');
         }
     }
 
@@ -188,14 +171,6 @@
         $('#dg').datagrid('reload');
     }
 
-    // 打开新增窗口
-    function open_insert() {
-        var url='<?php echo $ctrl_url.'/info/'?>' + '0';
-        $('#manage_edit').attr('src',url);
-        change_panel('edit');
-    }
-
-
     // 查看详情
     function open_detail() {
         var info = $('#dg').datagrid('getSelected');
@@ -203,7 +178,7 @@
             $.messager.alert('操作提示', '请选择需要查看的记录！', 'warning');
             return;
         }
-        var cur_tips_id = info['applyid'];
+        var cur_tips_id = info['customer'];
         var url='<?php echo $ctrl_url.'/details/'?>' + cur_tips_id;
         $('#manage_edit').attr('src',url);
         change_panel('details');

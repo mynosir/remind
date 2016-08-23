@@ -46,7 +46,7 @@
                     申请人：
                     <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" >
                     </select>
-                    客户类型：
+                    类型：
                     <select id="type" class="textbox-text" name="type" style="width:80px;">
                         <option value="-1" selected="selected">不限</option>
                         <option value="0">商标</option>
@@ -196,29 +196,6 @@
         var fm_data = $('#fm-search').form('getData');
         $('#dg').datagrid('options').queryParams = {actionxm:'search', rs:fm_data};
         $('#dg').datagrid('reload');
-    }
-
-    // 格式化订单类型
-    function format_type(value) {
-        var rtn = '';
-        switch(value) {
-            case '0':
-                rtn = '<span>商标</span>';
-                break;
-            case '1':
-                rtn = '<span>专利</span>';
-                break;
-            case '2':
-                rtn = '<span>版权</span>';
-                break;
-            case '3':
-                rtn = '<span>其他</span>';
-                break;
-            default:
-                rtn = '<span style="color:grey;">未知</span>';
-                break;
-        }
-        return rtn;
     }
 
     </script>

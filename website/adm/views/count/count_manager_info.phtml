@@ -6,7 +6,8 @@
             'css'=>array(),
             'js' =>array('jquery.easyui.extension/datagrid-detailview'),
         ));
-        $ctrl_url = base_url('orders/order_undone_manager');
+        $ctrl_url = base_url('count/count_manager');
+        $order_url = base_url('orders/order_undone_manager');
     ?>
     <style>
     .split-line {
@@ -29,7 +30,10 @@
     </style>
 </head>
 <body>
-    <div id="p-dg" class="easyui-panel" title="订单信息管理" fit="true" border="false">
+    <div id="p-dg1" class="easyui-panel" fit="true" border="false">
+        <div data-options="region:'north'" style="height:28px;overflow:hidden;background-color:#dddddd;" border="false">
+            <button class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="javascript:window.parent.change_panel('dg');">返回</button>
+        </div>
         <table id="dg" class="easyui-datagrid" title=""
                fit="true" border="false" plain="true"
                toolbar="#toolbar" multiSort="true"
@@ -40,13 +44,10 @@
         <div id="toolbar" style="padding:2px 3px;">
             <form id="fm-search" method="post" novalidate>
                 <div style="margin:3px 0;">
-                    <input type="hidden" id="isend" name="isend" value="0" />
-                    <input type="hidden" id="nexthandeler" name="nexthandeler" value="<?php echo $user_id; ?>"/>
+                    <input type="hidden" id="step" name="step" value="1" />
+                    <input type="hidden" name="customer" value="<?php echo get_value($info, 'customer', '0'); ?>">
                     申请名称：
                     <input id="name" class="easyui-textbox" style="width:100px" name="name">
-                    申请人：
-                    <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" >
-                    </select>
                     类型：
                     <select id="type" class="textbox-text" name="type" style="width:80px;">
                         <option value="-1" selected="selected">不限</option>
@@ -70,7 +71,7 @@
     $(function() {
         window.setTimeout(function() {
             var obj = new Object();
-            obj.actionxm = 'search';
+            obj.actionxm = 'search_1';
             obj.rs = $('#fm-search').form('getData');
             $('#dg').datagrid({
                 url: "<?php echo $ctrl_url.'/get'?>",
@@ -84,11 +85,11 @@
                     },{
                         field:'name',
                         title:'申请名称',
-                        width:'190'
+                        width:'200'
                     },{
                         field:'type',
                         title:'类型',
-                        width:'40',
+                        width:'80',
                         formatter: function(value) {
                             var rtn = '';
                             switch(value) {
@@ -111,77 +112,37 @@
                             return rtn;
                         }
                     },{
-                        field:'customer',
+                        field:'customername',
                         title:'申请人',
-                        width:'100'
-                    },{
-                        field:'nexthandeler',
-                        title:'当前处理人',
-                        width:'120'
-                    },{
-                        field:'handeltime',
-                        title:'处理期限',
-                        width:'100'
-                    },{
-                        field:'createtime',
-                        title:'分配时间',
-                        width:'100'
+                        width:'200'
                     },{
                         field:'_opt',
                         title:'操作',
-                        width:'120',
+                        width:'100',
                         formatter: function(){
-                            var html = '<a class="detailcls" icon="icon-search">查看</a>&nbsp;<a class="editcls" icon="icon-edit">处理</a>'
+                            var html = '<a class="detailcls" icon="icon-search">查看</a>'
                             return html;
                         }
                     }
                 ]],
                 onLoadSuccess: function(){
                     $('.detailcls').linkbutton({text:'查看',plain:true,iconCls:'icon-search'});
-                    $('.editcls').linkbutton({text:'处理',plain:true,iconCls:'icon-edit'});
                     $('.detailcls').on('click', function(){
                         setTimeout(open_detail, 100);
-                    });
-                    $('.editcls').on('click', function(){
-                        setTimeout(open_operate, 100);
                     });
                 }
             });
         }, 100);
 
-        // 加载申请人下拉框
-        $.ajax({
-            url: "<?php echo $ctrl_url.'/customers'?>",
-            type: 'get',
-            datatype: 'json',
-            success: function(result) {
-                var data = $.parseJSON(result);
-                console.log(data);
-                var new_data = new Array();
-                new_data.push({"showname":"不限", "id":-1, "selected":true});
-                $.each(data.rows, function(i, n) {
-                    new_data.push({"showname":n.user_name, 'id': n.id});
-                });
-                $("#customer").combobox("loadData", new_data);
-            }
-        });
-
-        $('#customer').combobox({
-            onSelect: function(node) {
-                console.log(node);
-                var n = node.showname.replace(/&nbsp;/ig, '');
-                $('#customer').combobox('setText', n);
-            }
-        })
     });
 
     // 切换主面板
     function change_panel($name) {
         if($name=='dg') {
-            $('#p-dg').panel('open');
+            $('#p-dg1').panel('open');
             $('#p-edit').panel('close');
         } else {
-            $('#p-dg').panel('close');
+            $('#p-dg1').panel('close');
             $('#p-edit').panel('open');
         }
     }
@@ -189,19 +150,6 @@
     // 刷新面板
     function dg_reload(){
         $('#dg').datagrid('reload');
-    }
-
-    // 处理
-    function open_operate() {
-        var info = $('#dg').datagrid('getSelected');
-        if(info==null) {
-            $.messager.alert('操作提示', '请选择需要处理的记录！', 'warning');
-            return;
-        }
-        var cur_tips_id = info['id'];
-        var url = '<?php echo $ctrl_url.'/info/'?>' + cur_tips_id;
-        $('#manage_edit').attr('src',url);
-        change_panel('edit');
     }
 
     // 查看详情
@@ -212,7 +160,7 @@
             return;
         }
         var cur_tips_id = info['applyid'];
-        var url='<?php echo $ctrl_url.'/details/'?>' + cur_tips_id;
+        var url='<?php echo $order_url.'/details/'?>' + cur_tips_id;
         $('#manage_edit').attr('src',url);
         change_panel('details');
     }
@@ -222,29 +170,6 @@
         var fm_data = $('#fm-search').form('getData');
         $('#dg').datagrid('options').queryParams = {actionxm:'search', rs:fm_data};
         $('#dg').datagrid('reload');
-    }
-
-    // 格式化订单类型
-    function format_type(value) {
-        var rtn = '';
-        switch(value) {
-            case '0':
-                rtn = '<span>商标</span>';
-                break;
-            case '1':
-                rtn = '<span>专利</span>';
-                break;
-            case '2':
-                rtn = '<span>版权</span>';
-                break;
-            case '3':
-                rtn = '<span>其他</span>';
-                break;
-            default:
-                rtn = '<span style="color:grey;">未知</span>';
-                break;
-        }
-        return rtn;
     }
 
     </script>
