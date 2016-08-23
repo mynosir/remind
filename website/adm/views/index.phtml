@@ -168,6 +168,15 @@ function display_treeview($app_menu,$pid){
         (function(){
             var href=window.location.href;
             var index=href.indexOf('#');
+            var num = "<?php echo $onhandelNum; ?>";
+            if (parseInt(num)>0) {
+                $.messager.show({
+                    title:'系统提示',
+                    msg:'您有' + num + '条待处理任务<a style="color:red;" class="js_messager_tip">->点此马上处理</a>',
+                    timeout:0,
+                    showType:'show'
+                });
+            }
             if(index>0){
                 var attr=href.substr(index);
                 var menu=$('.easyui-tree a[pos='+attr+']');
@@ -175,6 +184,20 @@ function display_treeview($app_menu,$pid){
                     menu.trigger('click');
                 }
             }
+            $('.js_messager_tip').on('click', function(){
+                var menu=$('.easyui-tree a[pos="#orders-on_handel_order"]');
+                if(menu) {
+                    menu.trigger('click');
+                    $(".messager-body").window('close');
+                } else {
+                    $.messager.alert({
+                        title: "系统提示",
+                        msg: "您还没有配置处理权限，请联系管理员处理",
+                        icon: "warning",
+                        fn: function(){}
+                    });
+                }
+            });
         })();
     });
     function open_pwd_update(){

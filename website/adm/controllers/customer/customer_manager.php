@@ -6,7 +6,7 @@
 class customer_manager extends MY_Controller {
 
     public function __construct() {
-        parent::__construct();
+        parent::__construct(__FILE__);
         $this->load->model('customer_manager_model', 'def_model');
     }
 

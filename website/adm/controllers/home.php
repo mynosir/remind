@@ -23,8 +23,10 @@ class home extends MY_Controller {
         $is_admin   = $this->session->userdata('is_admin');
         $list = $this->pms_model->get_user_menu_pms($user_id,$is_admin);
         $tree = array();
+        $this->load->model('order_manager_model', 'order_model');
+        $onhandelNum = $this->order_model->countOrders();
         create_tree_list($list, $tree, 0, 0, array('id_key'=>'menu_id', 'pid_key'=>'pid'));
-        $this->load->view('index', array('app_menu'=>$tree));
+        $this->load->view('index', array('app_menu'=>$tree, 'onhandelNum'=>$onhandelNum));
     }
 
 
@@ -36,4 +38,6 @@ class home extends MY_Controller {
         $result = $this->user_model->pwd_update($user_id, $pwd_old, $pwd_new);
         $this->output_result($result);
     }
+
+
 }

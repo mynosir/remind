@@ -243,4 +243,21 @@ class order_manager_model extends MY_Model {
         return md5($username . time());
     }
 
+    // 查询待处理订单数
+    public function countOrders() {
+        $user_id = $this->session->userdata('user_id');
+        $where = ' where flag=0 and isend=0 ';
+        if($user_id!='' && $user_id!='-1') {
+            $where .= ' and nexthandeler=' . $user_id . ' ';
+        }
+        $query = $this->db->query('select count(1) as num from ' . $this->table . $where . ' group by nexthandeler');
+        $result = $query->result_array();
+        if(count($result)==0) {
+            $num = 0;
+        } else {
+            $num = $result[0]['num'];
+        }
+        return $num;
+    }
+
 }
