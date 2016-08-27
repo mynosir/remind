@@ -112,11 +112,6 @@ class order_undone_manager extends MY_Controller {
                 $info = $this->get_request();
                 $result = $this->def_model->insert($info);
                 break;
-            case 'update':
-                $id = $this->input->post('id');
-                $info = $this->get_request();
-                $result = $this->def_model->update($id, $info);
-                break;
         }
         $this->output_result($result);
     }

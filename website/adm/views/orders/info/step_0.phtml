@@ -263,10 +263,8 @@
                 if(result.success==false) {
                     $.messager.alert('操作提示', result.data, 'warning');
                 } else {
-                    cur_tips_id = result.data.tips_id;
-                    $('#fm-edit input[name="actionxm"]').val('update');
-                    $('#fm-edit input[name="tips_id"]').val(cur_tips_id);
                     $.messager.alert('操作提示', '保存成功', 'info', function() {
+                        window.location.reload();
                         // $('#p-edit').panel('open').panel('refresh');
                     });
                 }
