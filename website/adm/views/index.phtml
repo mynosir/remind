@@ -172,7 +172,7 @@ function display_treeview($app_menu,$pid){
             if (parseInt(num)>0) {
                 $.messager.show({
                     title:'系统提示',
-                    msg:'您有' + num + '条待处理任务<a style="color:red;" class="js_messager_tip">->点此马上处理</a>',
+                    msg:'您有' + num + '条待处理任务<a style="color:red;cursor:pointer;" class="js_messager_tip">->点此马上处理</a>',
                     timeout:0,
                     showType:'show'
                 });
