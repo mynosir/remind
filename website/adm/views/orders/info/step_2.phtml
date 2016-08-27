@@ -153,6 +153,24 @@
     function do_save() {
         $('#fm-edit').form('submit', {
             url: '<?php echo $ctrl_url; ?>/post',
+            onSubmit: function() {
+                if(!$('.js_back_step').hasClass('dn')) {
+                    if($('input[name="handeltime"').val()=='') {
+                        $.messager.alert('提示信息', '处理期限不可为空！', 'error');
+                        return false;
+                    }
+                    if($('input[name="nexthandeler"').val()==-1) {
+                        $.messager.alert('提示信息', '下一步责任人不可为空！', 'error');
+                        return false;
+                    }
+                    return $(this).form('validate');
+                } else {
+                    if($('input[name="registerdate"').val()==-'') {
+                        $.messager.alert('提示信息', '登记任务申请日不可为空！', 'error');
+                        return false;
+                    }
+                }
+            },
             success: function(result) {
                 var result = $.parseJSON(result);
                 var actionxm = $('#fm-edit input[name="actionxm"]').val();

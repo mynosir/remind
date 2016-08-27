@@ -228,6 +228,11 @@
         });
 
         // 加载处理人下拉框
+        getNextHandler();
+    })();
+
+    // 加载处理人下拉框数据
+    function getNextHandler() {
         $.ajax({
             url: "<?php echo base_url('sys/user/get?actionxm=get_list')?>",
             type: 'get',
@@ -250,13 +255,28 @@
                 var n = node.true_name.replace(/&nbsp;/ig, '');
                 $('#nexthandeler').combobox('setText', n);
             }
-        })
-    })();
+        });
+    }
 
     // 保存登录tips信息
     function do_save() {
         $('#fm-edit').form('submit', {
             url: '<?php echo $ctrl_url; ?>/post',
+            onSubmit: function() {
+                if($('input[name="customer"').val()==-1) {
+                    $.messager.alert('提示信息', '申请人不可为空！', 'error');
+                    return false;
+                }
+                if($('input[name="handeltime"').val()=='') {
+                    $.messager.alert('提示信息', '处理期限不可为空！', 'error');
+                    return false;
+                }
+                if($('input[name="nexthandeler"').val()==-1) {
+                    $.messager.alert('提示信息', '下一步责任人不可为空！', 'error');
+                    return false;
+                }
+                return $(this).form('validate');
+            },
             success: function(result) {
                 var result = $.parseJSON(result);
                 var actionxm = $('#fm-edit input[name="actionxm"]').val();
