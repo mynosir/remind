@@ -7,7 +7,7 @@
 class order_manager_model extends MY_Model {
 
     private $table = 'corder';
-    private $fields = 'id, applyid, name, customer, type, islater, billinfo, receiptinfo, handelpoint, step, handeltime, nexthandeler, nextid, remark, zipname, registerdate, applyno, ispaid, isslowdown, isbillout, registrationdate, isend, createtime, createuser';
+    private $fields = 'id, applyid, name, customer, type, islater, billinfo, receiptinfo, handelpoint, step, handeltime, nexthandeler, nextid, remark, zipname, registerdate, applyno, ispaid, isslowdown, isbillout, registrationdate, isend, createtime, createuser, promoter_id';
 
     public function __construct() {
         parent::__construct();
@@ -162,6 +162,18 @@ class order_manager_model extends MY_Model {
     }
 
 
+    /**
+     * 返回订单的发起人id
+     * @param  [type] $applyid [description]
+     * @return [type]          [description]
+     */
+    private function getPromoterId($applyid) {
+        $query = $this->db->select($this->fields)->where('applyid', $applyid)->get($this->table);
+        $result = $query->row_array();
+        return $result['promoter_id'];
+    }
+
+
     public function insert($info) {
         if ($info['handelpoint']!='6') {
             $info['isend'] = 0;
@@ -174,6 +186,9 @@ class order_manager_model extends MY_Model {
             if ($info['type']!=1) {
                 $info['islater'] = 0;
             }
+            $info['promoter_id'] = $this->session->userdata('user_id');
+        } else {
+            $info['promoter_id'] = $this->getPromoterId($info['applyid']);
         }
 
         if ($info['step']!='1' && $info['applyid']) {
@@ -227,7 +242,8 @@ class order_manager_model extends MY_Model {
             'isend' => get_value($info, 'isend', 0),
             'createuser' => $this->session->userdata('user_id'),
             'flag' => 0,
-            'createtime' => time()
+            'createtime' => time(),
+            'promoter_id' => get_value($info, 'promoter_id', '')
         );
 
         $this->db->insert($this->table, $data);
