@@ -82,3 +82,7 @@ ALTER TABLE `corder` ADD `flag` TINYINT(2) NULL COMMENT '当前节点是否已�
 -- corder表中增加customer字段索引
 ALTER TABLE `corder` ADD INDEX(` customer `);
 
+
+-- linzequan 20160905
+-- corder表中添加流程发起人用户id
+ALTER TABLE  `corder` ADD  `promoter_id` INT( 11 ) NOT NULL COMMENT  '发起人userid';
