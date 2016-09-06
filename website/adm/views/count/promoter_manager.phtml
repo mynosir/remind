@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <?php
+        $this->load->view('/public/linker',array(
+            'css'=>array(),
+            'js' =>array('jquery.easyui.extension/datagrid-detailview'),
+        ));
+        $ctrl_url = base_url('count/promoter_manager');
+    ?>
+    <style>
+    .split-line {
+        color: #ccc;
+    }
+    .datagrid-sort-asc .datagrid-sort-icon, .datagrid-sort-desc .datagrid-sort-icon {
+        padding: 0px;
+    }
+    .dv-table td {
+        border:0;
+    }
+    .dv-label {
+        font-weight:bold;
+        color:#15428B;
+        width:100px;
+    }
+    .dv-table td {
+        padding-bottom: 8px;
+    }
+    </style>
+</head>
+<body>
+    <div id="p-dg" class="easyui-panel" title="信息管理" fit="true" border="false">
+        <table id="dg" class="easyui-datagrid" title=""
+               fit="true" border="false" plain="true"
+               toolbar="#toolbar" multiSort="true"
+               rownumbers="false" pagination="true" pageList="[50,100,150,200]" pageSize="50"
+               singleSelect="true" remote>
+            <thead>
+                <tr>
+                    <th data-options="sortable:true,field:'id',width:50">编号</th>
+                    <th data-options="sortable:true,field:'promoterName',width:80">发起人</th>
+                    <th data-options="sortable:true,field:'applyid',width:240">申请号</th>
+                    <th data-options="sortable:true,field:'name',width:180">申请名称</th>
+                    <th data-options="sortable:true,field:'customer',width:80">申请人</th>
+                </tr>
+            </thead>
+        </table>
+
+        <div id="toolbar" style="padding:2px 3px;">
+            <form id="fm-search" method="post" novalidate>
+                <div style="margin:3px 0;">
+                    流程发起人：
+                    <select id="promoter_id" class="easyui-combobox" style="width:100px;" name="promoter_id" data-options="valueField:'id',textField:'showname'" panelHeight="auto" ></select>
+                    <span class="split-line">|</span>
+                    <a class="easyui-linkbutton" iconCls="icon-search" onclick="do_search()" style="width:60px">搜索</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="p-edit" class="easyui-panel" title="客户信息编辑" fit="true" border="false">
+        <iframe id="manage_edit" style="width:100%;height:99%;border:0;" frameborder="0" scrolling="true" ></iframe>
+    </div>
+
+    <script type="text/javascript">
+    $(function() {
+        window.setTimeout(function() {
+            var obj = new Object();
+            obj.actionxm = 'search';
+            obj.rs = $('#fm-search').form('getData');
+            $('#dg').datagrid({
+                url: "<?php echo $ctrl_url.'/get'?>",
+                method: 'post',
+                queryParams: obj
+            });
+        }, 100);
+
+        $.ajax({
+            url: "<?php echo $ctrl_url.'/get?actionxm=getPromoter'?>",
+            type: 'get',
+            datatype: 'json',
+            success: function(result) {
+                var data = $.parseJSON(result);
+                console.log(data);
+                var new_data = new Array();
+                new_data.push({"showname":"不限", "id":-1, "selected":true});
+                $.each(data, function(i, n) {
+                    console.log(n);
+                    new_data.push({"showname":n.user_name, 'id': n.user_id});
+                });
+                $("#promoter_id").combobox("loadData", new_data);
+            }
+        });
+
+        $('#promoter_id').combobox({
+            onSelect: function(node) {
+                console.log(node);
+                var n = node.showname.replace(/&nbsp;/ig, '');
+                $('#promoter_id').combobox('setText', n);
+            }
+        });
+    });
+
+    // 切换主面板
+    function change_panel($name) {
+        if($name=='dg') {
+            $('#p-dg').panel('open');
+            $('#p-edit').panel('close');
+        } else {
+            $('#p-dg').panel('close');
+            $('#p-edit').panel('open');
+        }
+    }
+
+    // 刷新面板
+    function dg_reload(){
+        $('#dg').datagrid('reload');
+    }
+
+    // 打开新增窗口
+    function open_insert() {
+        var url='<?php echo $ctrl_url.'/info/'?>' + '0';
+        $('#manage_edit').attr('src',url);
+        change_panel('edit');
+    }
+
+    // 修改记录
+    function open_update() {
+        var info = $('#dg').datagrid('getSelected');
+        if(info==null) {
+            $.messager.alert('操作提示', '请选择需要修改的记录！', 'warning');
+            return;
+        }
+        cur_tips_id = info['id'];
+        var url = '<?php echo $ctrl_url.'/info/'?>' + cur_tips_id;
+        $('#manage_edit').attr('src',url);
+        change_panel('edit');
+    }
+
+    // 搜索操作
+    function do_search() {
+        var fm_data = $('#fm-search').form('getData');
+        $('#dg').datagrid('options').queryParams = {actionxm:'search', rs:fm_data};
+        $('#dg').datagrid('reload');
+    }
+
+    // 删除操作
+    function do_delete() {
+        var info = $('#dg').datagrid('getSelected');
+        if(info==null) {
+            $.messager.alert('操作提示', '请选择需要删除的项!', 'warning');
+            return;
+        }
+        $.messager.confirm('操作提示', '你确定要删除此项吗?', function(r) {
+            if (r) {
+                $.post('<?php echo base_url('customer/customer_manager/post')?>', {id: info.id, actionxm:'delete'}, function(result) {
+                    if (result.success) {
+                        $('#dg').datagrid('reload');
+                    } else {
+                        $.messager.alert('操作提示', '删除成功');
+                    }
+                }, 'json');
+            }
+        });
+    }
+
+    // 格式化申请人类型
+    function format_type(value) {
+        var rtn = '';
+        switch(value) {
+            case '0':
+                rtn = '<span>公司</span>';
+                break;
+            case '1':
+                rtn = '<span>个人</span>';
+                break;
+            default:
+                rtn = '<span style="color:grey;">未知</span>';
+                break;
+        }
+        return rtn;
+    }
+
+    </script>
+</body>
+</html>
+

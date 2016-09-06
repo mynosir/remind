@@ -160,6 +160,64 @@ class order_manager_model extends MY_Model {
         return $result;
     }
 
+
+    public function searchPromoter($params, $order, $page) {
+
+        $promoter_id = get_value($params, 'promoter_id', -1);           // 流程发起人
+
+        $where = array();
+
+        if($promoter_id!=-1) {
+            $where[] = array('promoter_id', $promoter_id);
+        }
+
+        // 只查询flag为0的情况
+        $where[] = array('flag', 0);
+
+        if(count($order)==0) {
+            $order[] = 'createtime desc';
+        }
+
+        $group_by = array('applyid');
+        $datas = $this->db->get_page($this->table, $this->fields, $where, $order, $page, $group_by);
+        $datas['total'] = count($datas['rows']);
+
+        $this->load->model('sys/user_model', 'user_model');
+        $this->load->model('customer_manager_model', 'customer_model');
+        $CI = &get_instance();
+        foreach($datas['rows'] as $k=>&$v) {
+            if($userinfo=$CI->user_model->get_userinfo_by_id($v['createuser'])) {
+                $v['createuser'] = $userinfo['true_name'];
+            } else {
+                $v['createuser'] = '';
+            }
+            if($userinfo=$CI->user_model->get_userinfo_by_id($v['nexthandeler'])) {
+                $v['nexthandeler'] = $userinfo['true_name'];
+            } else {
+                $v['nexthandeler'] = '';
+            }
+            if($userinfo=$CI->user_model->get_userinfo_by_id($v['promoter_id'])) {
+                $v['promoterName'] = $userinfo['true_name'];
+            } else {
+                $v['promoterName'] = '';
+            }
+            if($customer=$CI->customer_model->get_info($v['customer'])) {
+                $v['customer'] = $customer['user_name'];
+            } else {
+                $v['customer'] = '';
+            }
+
+            $v['handeltime'] = date('Y-m-d', $v['handeltime']);
+            $v['registerdate'] = date('Y-m-d', $v['registerdate']);
+            $v['registrationdate'] = date('Y-m-d', $v['registrationdate']);
+            $v['createtime'] = date('Y-m-d', $v['createtime']);
+
+        }
+        return $datas;
+
+    }
+
+
     public function get_info_byid($id) {
         if($id<0) {
             return array();
