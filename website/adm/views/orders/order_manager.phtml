@@ -44,8 +44,9 @@
                     申请名称：
                     <input id="name" class="easyui-textbox" style="width:100px" name="name">
                     申请人：
-                    <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" >
-                    </select>
+                    <select id="customer" class="easyui-combobox" style="width:100px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" ></select>
+                    流程发起人：
+                    <select id="promoter_id" class="easyui-combobox" style="width:100px;" name="promoter_id" data-options="valueField:'id',textField:'showname'" panelHeight="auto" ></select>
                     类型：
                     <select id="type" class="textbox-text" name="type" style="width:80px;">
                         <option value="-1" selected="selected">不限</option>
@@ -118,6 +119,10 @@
                         title:'分配时间',
                         width:'150'
                     },{
+                        field:'promoterName',
+                        title:'流程发起人',
+                        width:'100'
+                    },{
                         field:'_opt',
                         title:'操作',
                         width:'100',
@@ -159,7 +164,32 @@
                 var n = node.showname.replace(/&nbsp;/ig, '');
                 $('#customer').combobox('setText', n);
             }
-        })
+        });
+
+        $.ajax({
+            url: "<?php echo $ctrl_url.'/get?actionxm=getPromoter'?>",
+            type: 'get',
+            datatype: 'json',
+            success: function(result) {
+                var data = $.parseJSON(result);
+                console.log(data);
+                var new_data = new Array();
+                new_data.push({"showname":"不限", "id":-1, "selected":true});
+                $.each(data, function(i, n) {
+                    console.log(n);
+                    new_data.push({"showname":n.user_name, 'id': n.user_id});
+                });
+                $("#promoter_id").combobox("loadData", new_data);
+            }
+        });
+
+        $('#promoter_id').combobox({
+            onSelect: function(node) {
+                console.log(node);
+                var n = node.showname.replace(/&nbsp;/ig, '');
+                $('#promoter_id').combobox('setText', n);
+            }
+        });
     });
 
     // 切换主面板

@@ -23,6 +23,7 @@ class order_manager_model extends MY_Model {
         $type = get_value($params, 'type');                           // 客户类型
         $isend = get_value($params, 'isend', -1);                      // 订单是否已完成
         $nexthandeler = get_value($params, 'nexthandeler', -1);       // 当前处理人
+        $promoter_id = get_value($params, 'promoter_id', -1);           // 流程发起人
 
         $where = array();
         if($start_time!='') {
@@ -43,6 +44,9 @@ class order_manager_model extends MY_Model {
 
         if ($isend!='-1') {
             $where[] = array('isend', $isend);
+        }
+        if($promoter_id!='-1') {
+            $where[] = array('promoter_id', $promoter_id);
         }
 
         if ($nexthandeler!='' && $nexthandeler!='-1') {
@@ -74,6 +78,11 @@ class order_manager_model extends MY_Model {
                 $v['nexthandeler'] = $userinfo['true_name'];
             } else {
                 $v['nexthandeler'] = '';
+            }
+            if($userinfo=$CI->user_model->get_userinfo_by_id($v['promoter_id'])) {
+                $v['promoterName'] = $userinfo['true_name'];
+            } else {
+                $v['promoterName'] = '';
             }
             if($customer=$CI->customer_model->get_info($v['customer'])) {
                 $v['customer'] = $customer['user_name'];

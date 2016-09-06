@@ -101,6 +101,11 @@ class order_undone_manager extends MY_Controller {
                 );
                 echo json_encode($result);
                 break;
+            case 'getPromoter':
+                $this->load->model('sys/user_model', 'user_model');
+                $result = $this->user_model->get_list();
+                echo json_encode($result);
+                break;
         }
     }
 
