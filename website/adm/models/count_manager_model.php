@@ -22,6 +22,8 @@ class count_manager_model extends MY_Model {
     public function search($params, $order, $page) {
         $step = get_value($params, 'step');                          // 过滤申请步骤为1的
         $customer = get_value($params, 'customer');                  // 申请人
+        $start_time = get_value($params, 'start_time');               // 创建开始时间
+        $end_time = get_value($params, 'end_time');                   // 创建结束时间
 
         $where = array();
         if($customer!='' && $customer!='-1') {
@@ -29,6 +31,13 @@ class count_manager_model extends MY_Model {
         }
         if($step!='') {
             $where[] = array('step', $step);
+        }
+
+        if($start_time!='') {
+            $where[] = array('createtime', strtotime($start_time), '>=');
+        }
+        if($end_time!='') {
+            $where[] = array('createtime', strtotime($end_time), '<=');
         }
 
         if(count($order)==0) {

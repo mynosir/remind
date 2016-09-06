@@ -42,8 +42,11 @@
                 <div style="margin:3px 0;">
                     <input type="hidden" id="step" name="step" value="1" />
                     申请人：
-                    <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" >
-                    </select>
+                    <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" ></select>
+                    创建时间：
+                    <input class="easyui-datebox" style="width:150px;" name="start_time" id="start_time">
+                    到
+                    <input class="easyui-datebox" style="width:150px;" name="end_time" id="end_time">
                     <span class="split-line">|</span>
                     <a class="easyui-linkbutton" iconCls="icon-search" onclick="do_search()" style="width:60px">搜索</a>
                 </div>
