@@ -44,7 +44,7 @@
                     申请名称：
                     <input id="name" class="easyui-textbox" style="width:100px" name="name">
                     申请人：
-                    <select id="customer" class="easyui-combobox" style="width:100px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" ></select>
+                    <select id="customer" class="easyui-combobox" style="width:200px;" name="customer" data-options="valueField:'id',textField:'showname'" panelHeight="auto" ></select>
                     流程发起人：
                     <select id="promoter_id" class="easyui-combobox" style="width:100px;" name="promoter_id" data-options="valueField:'id',textField:'showname'" panelHeight="auto" ></select>
                     类型：
@@ -152,7 +152,7 @@
                 var new_data = new Array();
                 new_data.push({"showname":"不限", "id":-1, "selected":true});
                 $.each(data.rows, function(i, n) {
-                    new_data.push({"showname":n.user_name, 'id': n.id});
+                    new_data.push({"showname":n.user_name + '-' + n.mobile_tel, 'id': n.id});
                 });
                 $("#customer").combobox("loadData", new_data);
             }

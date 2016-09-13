@@ -213,7 +213,7 @@
                 var new_data = new Array();
                 new_data.push({"showname":"请选择", "id":-1, "selected":true});
                 $.each(data.rows, function(i, n) {
-                    new_data.push({"showname":n.user_name, 'id': n.id});
+                    new_data.push({"showname":n.user_name + '-' + n.mobile_tel, 'id': n.id});
                 });
                 $("#customer").combobox("loadData", new_data);
             }
