@@ -152,7 +152,7 @@ class order_manager_model extends MY_Model {
                 unset($v['islater']);
             }
 
-            $v['handeltime'] = date('Y-m-d', $v['handeltime']);
+            $v['handeltime'] = date('Y-m-d H:i:s', $v['handeltime']);
             $v['registerdate'] = date('Y-m-d', $v['registerdate']);
             $v['registrationdate'] = date('Y-m-d', $v['registrationdate']);
             $v['createtime'] = date('Y-m-d', $v['createtime']);
