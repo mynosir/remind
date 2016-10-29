@@ -164,11 +164,15 @@ class order_manager_model extends MY_Model {
     public function searchPromoter($params, $order, $page) {
 
         $promoter_id = get_value($params, 'promoter_id', -1);           // 流程发起人
+        $isend = get_value($params, 'isend', -1);                       // 订单状态
 
         $where = array();
 
         if($promoter_id!=-1) {
             $where[] = array('promoter_id', $promoter_id);
+        }
+        if($isend!=-1) {
+            $where[] = array('isend', $isend);
         }
 
         // 只查询flag为0的情况

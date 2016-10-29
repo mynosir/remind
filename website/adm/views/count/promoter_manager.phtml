@@ -42,6 +42,7 @@
                     <th data-options="sortable:true,field:'applyid',width:240">申请号</th>
                     <th data-options="sortable:true,field:'name',width:180">申请名称</th>
                     <th data-options="sortable:true,field:'customer',width:80">申请人</th>
+                    <th data-options="sortable:true,field:'isend',width:80" formatter="format_isend">是否完成</th>
                 </tr>
             </thead>
         </table>
@@ -51,6 +52,12 @@
                 <div style="margin:3px 0;">
                     流程发起人：
                     <select id="promoter_id" class="easyui-combobox" style="width:100px;" name="promoter_id" data-options="valueField:'id',textField:'showname'" panelHeight="auto" ></select>
+                    订单状态：
+                    <select name="isend">
+                        <option value="-1">全部</option>
+                        <option value="0">未完成</option>
+                        <option value="1">已完成</option>
+                    </select>
                     <span class="split-line">|</span>
                     <a class="easyui-linkbutton" iconCls="icon-search" onclick="do_search()" style="width:60px">搜索</a>
                 </div>
@@ -179,6 +186,14 @@
                 break;
         }
         return rtn;
+    }
+
+    function format_isend(value, row) {
+        if(value==0) {
+            return '<span style="color:red;">未完成</span>';
+        } else {
+            return '<span style="color:green;">已完成</span>';
+        }
     }
 
     </script>
