@@ -86,3 +86,16 @@ ALTER TABLE `corder` ADD INDEX(` customer `);
 -- linzequan 20160905
 -- corder表中添加流程发起人用户id
 ALTER TABLE  `corder` ADD  `promoter_id` INT( 11 ) NOT NULL COMMENT  '发起人userid';
+
+
+-- linzequan 20161029
+-- 添加缴费记录表
+create table `payRecord` (
+    `id` int(11) not null auto_increment comment '自增id',
+    `applyid` varchar(32) not null comment '订单id',
+    `amount` float(4) not null comment '金额',
+    `handelUserId` int not null comment '操作人',
+    `ext` varchar(1024) comment '备注',
+    `create_time` int(11) not null comment '缴费时间戳',
+    primary key (`id`)
+) engine = myisam character set utf8 collate utf8_general_ci comment = '缴费记录表';

@@ -66,6 +66,10 @@
         <iframe id="manage_edit" style="width:100%;height:99%;border:0;" frameborder="0" scrolling="true" ></iframe>
     </div>
 
+    <div id="p-payedit" class="easyui-panel" title="缴费信息" fit="true" border="false">
+        <iframe id="pay_manage_edit" style="width:100%;height:99%;border:0;" frameborder="0" scrolling="true" ></iframe>
+    </div>
+
     <script type="text/javascript">
     $(function() {
         window.setTimeout(function() {
@@ -134,17 +138,21 @@
                     },{
                         field:'_opt',
                         title:'操作',
-                        width:'80',
+                        width:'120',
                         formatter: function(){
-                            var html = '<a class="detailcls" icon="icon-search">查看</a>'
+                            var html = '<a class="detailcls" icon="icon-search">查看</a><a class="payRecord" icon="icon-large-chart">缴费</a>'
                             return html;
                         }
                     }
                 ]],
                 onLoadSuccess: function(){
                     $('.detailcls').linkbutton({text:'查看',plain:true,iconCls:'icon-search'});
+                    $('.payRecord').linkbutton({text:'缴费', plain: true, iconCls: 'icon-sum'});
                     $('.detailcls').on('click', function(){
                         setTimeout(open_detail, 100);
+                    });
+                    $('.payRecord').on('click', function() {
+                        setTimeout(open_pay, 10);
                     });
                 }
 
@@ -205,9 +213,15 @@
     // 切换主面板
     function change_panel($name) {
         if($name=='dg') {
+            $('#p-payedit').panel('close');
             $('#p-dg').panel('open');
             $('#p-edit').panel('close');
-        } else {
+        } else if($name=='pay') {
+            $('#p-payedit').panel('open');
+            $('#p-dg').panel('close');
+            $('#p-edit').panel('close');
+        }else {
+            $('#p-payedit').panel('close');
             $('#p-dg').panel('close');
             $('#p-edit').panel('open');
         }
@@ -237,6 +251,19 @@
         var url='<?php echo $ctrl_url.'/details/'?>' + cur_tips_id;
         $('#manage_edit').attr('src',url);
         change_panel('details');
+    }
+
+    // 缴费
+    function open_pay() {
+        var info = $('#dg').datagrid('getSelected');
+        if(info==null) {
+            $.messager.alert('操作提示', '请选择需要操作的记录！', 'warning');
+            return;
+        }
+        var cur_tips_id = info['applyid'];
+        var url='<?php echo $ctrl_url.'/pay/'?>' + cur_tips_id;
+        $('#pay_manage_edit').attr('src',url);
+        change_panel('pay');
     }
 
     // 搜索操作

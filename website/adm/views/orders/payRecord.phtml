@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<?php
+    $this->load->view('/public/linker',array(
+        'css'=>array(),
+        'js' =>array(),
+    ));
+    $ctrl_url = base_url('orders/order_undone_manager');
+?>
+<style>
+    .required {
+        color: red;
+    }
+    .fullwidth {
+        width: 100%;
+    }
+    .dn {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<div id="p-payedit" class="easyui-panel" title="" fit="true" border="false">
+    <div class="easyui-layout" fit="true">
+        <div data-options="region:'north'" style="height:28px;overflow:hidden;background-color:#dddddd;" border="false">
+            <button class="easyui-linkbutton" iconCls="icon-back" plain="true" onclick="javascript:window.parent.change_panel('dg');">返回</button>
+        </div>
+        <div data-options="region:'center'" style="overflow:hidden;" border="false">
+            <div id="p-edit-login" class="easyui-panel" fit="true" border="false" style="overflow:auto;">
+                <form id="fm-edit" method="post" style="width:90%; margin:10px;">
+                    <input type="hidden" name="id" value="<?php echo get_value($info, 'id', '0'); ?>">
+                    <input type="hidden" name="actionxm" value="savePay">
+                    <input type="hidden" name="applyid" value="<?php echo $applyid; ?>" >
+                    <table class="fm-table" cellpadding="8px">
+                        <colgroup>
+                            <col width="240px"  />
+                            <col width="470px" />
+                            <col width="*" />
+                        </colgroup>
+                        <tr>
+                            <td class="label">
+                                <span class="required">*</span>
+                                缴费金额：
+                            </td>
+                            <td>
+                                <input class="easyui-textbox" name="amount" style="width:100%" data-options="required:true" />
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">
+                                <span class="required"></span>
+                                备注：
+                            </td>
+                            <td>
+                                <input class="easyui-textbox" name="ext" id="ext" data-options="multiline:true" style="width:100%;height:80px">
+                            </td>
+                            <td>
+                                <span style="color:red;"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;" colspan="2">
+                                <button type="button" class="easyui-linkbutton" style="width:90px" onclick="do_save()">保存</button>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <button type="button" class="easyui-linkbutton" style="width:90px" onclick="do_reset()">重置</button>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </table>
+                </form>
+                <hr>
+                <?php if(count($info)>0) { ?>
+                <h3 style="padding-left: 20px;">缴费记录</h3>
+                <div>
+                    <style type="text/css">
+                        .payTable {
+                            border-collapse: collapse;
+                            border: none;
+                            font-size: 14px;
+                            margin-left: 20px;
+                        }
+                        .payTable td {
+                            border: solid #ccc 1px;
+                            padding: 5px 15px;
+                        }
+                    </style>
+                    <table class="payTable">
+                        <tr>
+                            <td>编号</td>
+                            <td>缴费日期</td>
+                            <td>金额（元）</td>
+                            <td>缴费操作人</td>
+                            <td>备注</td>
+                        </tr>
+                        <?php $idx = 1; foreach($info as $k=>$v) { ?>
+                        <tr>
+                            <td><?php echo $idx++; ?></td>
+                            <td><?php echo $v['create_time']; ?></td>
+                            <td><?php echo $v['amount']; ?></td>
+                            <td><?php echo $v['handelUsername']; ?></td>
+                            <td><?php echo $v['ext']; ?></td>
+                        </tr>
+                        <?php } ?>
+                </div>
+                <?php } else { ?>
+                <h3 style="padding-left: 20px; color: red;">暂无缴费记录</h3>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // 保存登录tips信息
+    function do_save() {
+        $('#fm-edit').form('submit', {
+            url: '<?php echo $ctrl_url; ?>/post',
+            onSubmit: function() {
+                if($('input[name="amount"').val()==-1) {
+                    $.messager.alert('提示信息', '缴费金额不可为空！', 'error');
+                    return false;
+                }
+                return $(this).form('validate');
+            },
+            success: function(result) {
+                var result = $.parseJSON(result);
+                var actionxm = $('#fm-edit input[name="actionxm"]').val();
+                if(result.success==false) {
+                    $.messager.alert('操作提示', result.data, 'warning');
+                } else {
+                    $.messager.alert('操作提示', '保存成功', 'info', function() {
+                        window.location.reload();
+                        // $('#p-edit').panel('open').panel('refresh');
+                    });
+                }
+            }
+        })
+    }
+
+
+</script>
+
+</body>
+</html>
