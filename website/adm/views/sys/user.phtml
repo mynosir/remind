@@ -20,7 +20,8 @@
                 <th data-options="sortable:true,field:'user_id',width:80">会员ID</th>
                 <th data-options="sortable:true,field:'user_name',width:120">会员账号</th>
                 <th data-options="sortable:true,field:'true_name',width:120">真实姓名</th>
-                <th data-options="sortable:true,field:'is_admin',width:100,align:'left'">是否管理员</th>
+                <th data-options="sortable:true,field:'is_admin',width:100,align:'left'" formatter="format_is_admin">是否管理员</th>
+                <th data-options="sortable:true,field:'is_financial',width:100,align:'left'" formatter="format_is_financial">是否财务人员</th>
                 <th data-options="sortable:true,field:'create_uname',width:120">创建账号</th>
                 <th data-options="sortable:true,field:'create_time',width:200">创建时间</th>
             </tr>
@@ -53,7 +54,7 @@
 
     /*添加 和 修改操作*/
     function open_insert() {
-        $('#fm-edit').form('clear').form('load', {actionxm:'insert', user_id:'系统编号', is_admin:0});
+        $('#fm-edit').form('clear').form('load', {actionxm:'insert', user_id:'系统编号', is_admin:0, is_financial:0});
         $('#dlg-edit').dialog('setTitle', '用户添加').dialog('open');
     }
 
@@ -69,6 +70,7 @@
                 user_name   :info.user_name,
                 true_name   :info.true_name,
                 is_admin    :info.is_admin,
+                is_financial:is_financial,
                 pwd         :'not-pwd'
         };
         $('#fm-edit').form('load', fm_data);
@@ -110,6 +112,32 @@
                 }, 'json');
             }
         });
+    }
+
+    function format_is_admin(value) {
+        var rtn = '';
+        switch(value) {
+            case '0':
+                rtn = '普通用户';
+                break;
+            case '1':
+                rtn = '超级管理员';
+                break;
+        }
+        return rtn;
+    }
+
+    function format_is_financial(value) {
+        var rtn = '';
+        switch(value) {
+            case '0':
+                rtn = '不是';
+                break;
+            case '1':
+                rtn = '是';
+                break;
+        }
+        return rtn;
     }
     </script>
 </body>

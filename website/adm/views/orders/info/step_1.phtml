@@ -89,7 +89,7 @@
                                 下一步责任人：
                             </td>
                             <td>
-                                <select id="nexthandeler" class="easyui-combobox" style="width:200px;" name="nexthandeler" data-options="valueField:'user_id',textField:'true_name'" panelHeight="auto" >
+                                <select id="nexthandeler" class="easyui-combobox" style="width:200px;" name="nexthandeler" data-options="valueField:'user_id',textField:'true_name',required:true" panelHeight="auto" >
                                 </select>
                             </td>
                             <td>
@@ -124,7 +124,7 @@
                 var data = $.parseJSON(result);
                 console.log(data);
                 var new_data = new Array();
-                new_data.push({"true_name":"请选择", "user_id":-1, "selected":true});
+                // new_data.push({"true_name":"请选择", "user_id":-1, "selected":true});
                 $.each(data, function(i, n) {
                     new_data.push({"true_name":n.true_name, 'user_id': n.user_id});
                 });

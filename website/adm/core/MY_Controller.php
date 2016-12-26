@@ -37,6 +37,7 @@ class MY_Controller extends CI_Controller {
                 $this->load->model('sys/pms_model');
                 $user_id = $this->session->userdata('user_id');
                 $is_admin = $this->session->userdata('is_admin');
+                $is_financial = $this->session->userdata('financial');
                 $user_pms = $this->pms_model->get_user_menu_pms($user_id, $is_admin);
                 foreach ($user_pms as $item) {
                     if($item['ctrl_name']==$this->ctrl_name) {

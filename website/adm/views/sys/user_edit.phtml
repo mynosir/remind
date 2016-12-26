@@ -1,4 +1,4 @@
-<div id="dlg-edit" class="easyui-dialog" style="width:400px;height:260px;padding:10px 20px"
+<div id="dlg-edit" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
     closed="true" modal="true" buttons="#dlg-edit-buttons" title="编辑表单">
     <form id="fm-edit" method="post" action="<?php echo base_url('sys/user/post')?>" novalidate>
         <input type="hidden" name="actionxm" value="">
@@ -27,6 +27,13 @@
                 <td>
                     <input type="radio" class="radio" name="is_admin" value="0" checked id="is_admin_0"><label for="is_admin_0">普通用户</label>
                     <input type="radio" class="radio" name="is_admin" value="1" id="is_admin_1"><label for="is_admin_1">超级管理员</label>
+                </td>
+            </tr>
+            <tr>
+                <td>是否财务:</td>
+                <td>
+                    <input type="radio" class="radio" name="is_financial" value="0" checked id="is_financial_0"><label for="is_financial_0">不是</label>
+                    <input type="radio" class="radio" name="is_financial" value="1" id="is_financial_1"><label for="is_financial_1">是</label>
                 </td>
             </tr>
         </table>

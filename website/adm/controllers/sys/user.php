@@ -44,6 +44,7 @@ class user extends MY_Controller {
                 $info['user_name'] = $this->input->post('user_name');
                 $info['true_name'] = $this->input->post('true_name');
                 $info['is_admin'] = $this->input->post('is_admin');
+                $info['is_financial'] = $this->input->post('is_financial');
                 $info['pwd'] = $this->input->post('pwd');
                 $result = $this->def_model->insert($info);
                 break;
@@ -52,6 +53,7 @@ class user extends MY_Controller {
                 $info['user_name'] = $this->input->post('user_name');
                 $info['true_name'] = $this->input->post('true_name');
                 $info['is_admin'] = $this->input->post('is_admin');
+                $info['is_financial'] = $this->input->post('is_financial');
                 $pwd = $this->input->post('pwd');
                 if($pwd!='not-pwd') {
                     $info['pwd'] = $pwd;

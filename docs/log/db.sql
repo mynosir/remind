@@ -99,3 +99,8 @@ create table `payRecord` (
     `create_time` int(11) not null comment '缴费时间戳',
     primary key (`id`)
 ) engine = myisam character set utf8 collate utf8_general_ci comment = '缴费记录表';
+
+
+-- linzequan 20161226
+-- 系统管理员添加是否财务人员字段
+alter table `sys_user` add `is_financial` tinyint(4) DEFAULT '0' COMMENT '0:非财务,1:财务';

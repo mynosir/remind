@@ -15,7 +15,7 @@ class user_model extends MY_Model {
 
 
     public function search($params, $order, $page) {
-        $fields = 'user_id, user_name, true_name, is_admin, create_uname, create_time';
+        $fields = 'user_id, user_name, true_name, is_admin, is_financial, create_uname, create_time';
         $where = array(
                     array('is_del', '0'),
                     array('user_name', get_value($params, 'user_name'), 'like'),
@@ -74,7 +74,7 @@ class user_model extends MY_Model {
 
 
     public function check_login($user_name, $pwd) {
-        $query = $this->db->select('user_id, user_name, true_name, pwd, is_admin')
+        $query = $this->db->select('user_id, user_name, true_name, is_financial, pwd, is_admin')
                         ->from($this->table)
                         ->where('user_name', $user_name)
                         ->get();
@@ -116,7 +116,7 @@ class user_model extends MY_Model {
 
 
     public function get_list() {
-        $fields = 'user_id, user_name, true_name, is_admin, create_uname, create_time';
+        $fields = 'user_id, user_name, true_name, is_admin, is_financial, create_uname, create_time';
         $result = $this->db->get_list($this->table, $fields);
         return $result['rows'];
     }
