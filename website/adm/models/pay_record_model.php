@@ -5,7 +5,7 @@
  * @author linzequan <lowkey361@gmail.com>
  *
  */
-class payRecord_model extends MY_Model {
+class pay_record_model extends MY_Model {
 
     private $table = 'payRecord';
     private $fields = 'id, applyid, amount, handelUserId, ext, create_time';

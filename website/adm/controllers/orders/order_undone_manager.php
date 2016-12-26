@@ -58,8 +58,8 @@ class order_undone_manager extends MY_Controller {
 
     // 打开缴费页面
     public function pay($applyid=0) {
-        $this->load->model('payRecord_model');
-        $data['info'] = $this->payRecord_model->getRecordList($applyid);
+        $this->load->model('pay_record_model');
+        $data['info'] = $this->pay_record_model->getRecordList($applyid);
         $data['applyid'] = $applyid;
         $this->load->view('orders/payRecord', $data);
     }
@@ -126,9 +126,9 @@ class order_undone_manager extends MY_Controller {
                 $result = $this->def_model->insert($info);
                 break;
             case 'savePay':
-                $this->load->model('payRecord_model');
+                $this->load->model('pay_record_model');
                 $info = $this->get_request();
-                $result = $this->payRecord_model->insert($info);
+                $result = $this->pay_record_model->insert($info);
                 break;
         }
         $this->output_result($result);
